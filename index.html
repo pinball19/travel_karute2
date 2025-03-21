@@ -6,46 +6,201 @@
   <title>団体ナビ成約カルテ</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.min.css" />
   <style>
-    /* 既存スタイル（変更なし） */
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-    .app-container { max-width: 1200px; margin: 0 auto; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px; border-radius: 5px; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
-    .app-title h1 { margin: 0; color: #217346; }
-    .app-info { font-size: 14px; color: #666; }
-    .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-    button { padding: 8px 16px; background-color: #217346; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background-color: #1a5e38; }
-    .section-container { margin-bottom: 25px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
-    .section-header { padding: 8px 15px; font-weight: bold; font-size: 16px; color: white; }
-    .grid-container { height: auto !important; overflow: visible !important; }
-    footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; font-size: 14px; color: #666; }
+    /* 基本スタイル */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 5px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .app-title h1 {
+      margin: 0;
+      color: #217346;
+    }
+    .app-info {
+      font-size: 14px;
+      color: #666;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #217346;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1a5e38;
+    }
+    .section-container {
+      margin-bottom: 25px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 8px 15px;
+      font-weight: bold;
+      font-size: 16px;
+      color: white;
+    }
+    .grid-container {
+      height: auto !important;
+      overflow: visible !important;
+    }
+    footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #666;
+    }
     .basic-section .section-header { background-color: #4472c4; }
     .payment-section .section-header { background-color: #70ad47; }
     .expense-section .section-header { background-color: #ed7d31; }
     .summary-section .section-header { background-color: #7030a0; }
-    .add-row-btn { margin: 5px 10px 10px 0; padding: 5px 10px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; float: right; }
+    .add-row-btn {
+      margin: 5px 10px 10px 0;
+      padding: 5px 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right;
+    }
     .add-row-btn:hover { background-color: #45a049; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; }
-    .modal-content { position: relative; background-color: white; margin: 50px auto; padding: 20px; width: 90%; max-width: 800px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .close { position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer; }
-    .notification { position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #4caf50; color: white; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 9999; display: none; }
-    .handsontable .wtHolder, .handsontable .ht_master .wtHolder, .handsontable .wtHider { overflow: visible !important; height: auto !important; }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    .modal-content {
+      position: relative;
+      background-color: white;
+      margin: 50px auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 9999;
+      display: none;
+    }
+    .handsontable .wtHolder, .handsontable .ht_master .wtHolder, .handsontable .wtHider {
+      overflow: visible !important;
+      height: auto !important;
+    }
     .handsontable { height: auto !important; }
     .handsontable .htCore { height: auto !important; }
     .handsontable ::-webkit-scrollbar { display: none !important; }
-    .handsontable { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+    .handsontable {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
     .handsontable .wtSpreader { height: auto !important; width: auto !important; }
     .ht_clone_top { z-index: 101 !important; }
-    #karte-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    #karte-list th, #karte-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    #karte-list {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    #karte-list th, #karte-list td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
     #karte-list th { background-color: #f2f2f2; }
     #karte-list tr:nth-child(even) { background-color: #f9f9f9; }
     #karte-list tr:hover { background-color: #f1f1f1; }
     .search-container { margin-bottom: 10px; }
-    #search { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-    .edit-btn, .delete-btn { padding: 5px 10px; margin-right: 5px; font-size: 12px; }
+    #search {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .edit-btn, .delete-btn {
+      padding: 5px 10px;
+      margin-right: 5px;
+      font-size: 12px;
+    }
     .delete-btn { background-color: #f44336; }
     .delete-btn:hover { background-color: #d32f2f; }
+
+    /* スマホ向けレスポンシブ調整 */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .app-container {
+        max-width: 100%;
+        padding: 10px;
+      }
+      header, .action-buttons, footer {
+        flex-direction: column;
+        text-align: center;
+      }
+      .action-buttons button {
+        margin-bottom: 10px;
+      }
+      .grid-container {
+        overflow-x: auto;
+      }
+      #karte-list th, #karte-list td {
+        font-size: 14px;
+      }
+    }
+    @media (max-width: 480px) {
+      .app-title h1 { font-size: 20px; }
+      .app-info { font-size: 12px; }
+      button { font-size: 14px; padding: 6px 12px; }
+    }
   </style>
 </head>
 <body>
@@ -89,7 +244,7 @@
       <div>接続状態: <span id="connection-status">オンライン</span></div>
     </footer>
   </div>
-  <!-- カルテ一覧画面（初回表示用） -->
+  <!-- カルテ一覧画面 -->
   <div id="list-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -488,9 +643,17 @@
         });
         
         // モーダル関連
-        document.querySelector('.close').addEventListener('click', () => { document.getElementById('list-modal').style.display = 'none'; });
-        document.getElementById('search').addEventListener('input', (e) => { this.filterKarteList(e.target.value); });
-        window.addEventListener('click', (event) => { if (event.target === document.getElementById('list-modal')) { document.getElementById('list-modal').style.display = 'none'; } });
+        document.querySelector('.close').addEventListener('click', () => {
+          document.getElementById('list-modal').style.display = 'none';
+        });
+        document.getElementById('search').addEventListener('input', (e) => { 
+          this.filterKarteList(e.target.value); 
+        });
+        window.addEventListener('click', (event) => { 
+          if (event.target === document.getElementById('list-modal')) { 
+            document.getElementById('list-modal').style.display = 'none'; 
+          } 
+        });
         
         // オンライン・オフライン
         window.addEventListener('online', () => {
@@ -524,7 +687,10 @@
       showNotification: function(message, type = 'info') {
         console.log("showNotification:", message, type);
         const notification = document.getElementById('notification');
-        if (!notification) { console.error("通知エレメントが見つかりません"); return; }
+        if (!notification) { 
+          console.error("通知エレメントが見つかりません"); 
+          return; 
+        }
         notification.textContent = message;
         switch (type) {
           case 'success': notification.style.backgroundColor = '#4caf50'; break;
@@ -574,7 +740,9 @@
           this.grids.summary.setDataAtCell(1, 4, total, 'internal');
           // debounce を使って再計算
           this.debouncedUpdateSummary();
-        } catch (error) { console.error('入金合計計算エラー:', error); }
+        } catch (error) { 
+          console.error('入金合計計算エラー:', error); 
+        }
       },
       
       calculateExpenseTotal: function() {
@@ -597,7 +765,9 @@
           this.grids.summary.setDataAtCell(1, 5, total, 'internal');
           // debounce を使って再計算
           this.debouncedUpdateSummary();
-        } catch (error) { console.error('支払合計計算エラー:', error); }
+        } catch (error) { 
+          console.error('支払合計計算エラー:', error); 
+        }
       },
       
       // 従来の calculateProfit() は updateSummaryFromDataModel() に統合
