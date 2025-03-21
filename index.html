@@ -203,7 +203,14 @@
               console.log("基本グリッド afterRender: tableHeight=", tableHeight);
             } catch (e) { console.warn('基本グリッド 高さ調整エラー:', e); }
           },
-          afterChange: (changes, source) => { if (source === 'edit' || source === 'paste') { that.markHasChanges(); } }
+          afterChange: (changes, source) => { 
+            if (source === 'edit' || source === 'paste') {
+              // 直接呼ぶのではなく次のイベントループへ遅延させる
+              setTimeout(() => {
+                that.markHasChanges();
+              }, 0);
+            }
+          }
         });
         
         // 入金情報グリッド
@@ -237,8 +244,10 @@
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange:", changes);
-              that.calculatePaymentTotal();
-              that.markHasChanges();
+              setTimeout(() => {
+                that.calculatePaymentTotal();
+                that.markHasChanges();
+              }, 0);
             }
           },
           afterCreateRow: function(index, amount, source) {
@@ -304,8 +313,10 @@
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               console.log("支払グリッド afterChange:", changes);
-              that.calculateExpenseTotal();
-              that.markHasChanges();
+              setTimeout(() => {
+                that.calculateExpenseTotal();
+                that.markHasChanges();
+              }, 0);
             }
           },
           afterCreateRow: function(index, amount, source) {
@@ -355,14 +366,15 @@
             const cellProperties = {};
             // 行0はラベル行：読み取り専用
             if (row === 0) { cellProperties.readOnly = true; }
-            // 行1は計算結果用（特に型指定なし）
             return cellProperties;
           },
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               console.log("収支グリッド afterChange:", changes);
-              that.markHasChanges();
-              that.calculateProfit();
+              setTimeout(() => {
+                that.markHasChanges();
+                that.calculateProfit();
+              }, 0);
             }
           }
         });
