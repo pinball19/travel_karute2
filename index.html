@@ -141,6 +141,13 @@
     const KarteApp = {
       currentId: null,
       hasChanges: false,
+      // dataModel を導入（入金合計、支払合計、人数）
+      dataModel: {
+        paymentTotal: 0,
+        expenseTotal: 0,
+        personCount: 0
+      },
+      debounceTimer: null, // debounce 用タイマー
       grids: { basic: null, payment: null, expense: null, summary: null },
       // summary テンプレートは2行×8列（行0：ラベル、行1：計算結果）
       templates: {
@@ -181,6 +188,40 @@
         console.log("KarteApp.init() end");
       },
       
+      // 共通のデータモデルに基づいて Summary グリッドを更新する関数
+      updateSummaryFromDataModel: function() {
+        try {
+          const travelTotal = this.dataModel.paymentTotal || 0;
+          const expenseTotal = this.dataModel.expenseTotal || 0;
+          // 基本情報グリッドから人数を取得
+          const basicData = this.grids.basic.getData();
+          let personCount = 0;
+          if (basicData && basicData.length >= 3 && basicData[2].length >= 6) {
+            personCount = this.parseNumber(basicData[2][5]);
+            this.dataModel.personCount = personCount;
+          }
+          const profit = travelTotal - expenseTotal;
+          const profitRate = travelTotal > 0 ? (profit / travelTotal * 100).toFixed(1) + '%' : '0%';
+          const profitPerPerson = personCount > 0 ? Math.round(profit / personCount) : 0;
+          // Summary グリッドの各セルを更新
+          this.grids.summary.setDataAtCell(1, 1, profitRate, 'internal');
+          this.grids.summary.setDataAtCell(1, 2, profit, 'internal');
+          this.grids.summary.setDataAtCell(1, 3, profitPerPerson, 'internal');
+          this.grids.summary.setDataAtCell(1, 6, personCount, 'internal');
+          console.log("updateSummaryFromDataModel: travelTotal=", travelTotal, " expenseTotal=", expenseTotal, " profit=", profit, " profitRate=", profitRate, " personCount=", personCount, " profitPerPerson=", profitPerPerson);
+        } catch (error) {
+          console.error('Summary更新エラー:', error);
+        }
+      },
+      
+      // debounce 用：短い遅延後に updateSummaryFromDataModel() を実行
+      debouncedUpdateSummary: function() {
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(() => {
+          this.updateSummaryFromDataModel();
+        }, 300);
+      },
+      
       initGrids: function() {
         const that = this;
         console.log("initGrids() start");
@@ -205,10 +246,7 @@
           },
           afterChange: (changes, source) => { 
             if (source === 'edit' || source === 'paste') {
-              // 直接呼ぶのではなく次のイベントループへ遅延させる
-              setTimeout(() => {
-                that.markHasChanges();
-              }, 0);
+              setTimeout(() => { that.markHasChanges(); that.debouncedUpdateSummary(); }, 0);
             }
           }
         });
@@ -244,6 +282,7 @@
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange:", changes);
+              // 合計セルの変更があれば即時 Summary に転送
               setTimeout(() => {
                 that.calculatePaymentTotal();
                 that.markHasChanges();
@@ -373,7 +412,7 @@
               console.log("収支グリッド afterChange:", changes);
               setTimeout(() => {
                 that.markHasChanges();
-                that.calculateProfit();
+                that.debouncedUpdateSummary();
               }, 0);
             }
           }
@@ -518,14 +557,16 @@
           const data = this.grids.payment.getData();
           let total = 0;
           const lastRowIndex = data.length - 1;
-          for (let i = 1; i < lastRowIndex; i++) { total += this.parseNumber(data[i][4]); }
-          console.log("calculatePaymentTotal: total =", total);
-          this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
-          if (this.grids.summary) {
-            // 旅行総額/A（summary 行1, 列4）にセット
-            this.grids.summary.setDataAtCell(1, 4, total, 'internal');
-            this.calculateProfit();
+          for (let i = 1; i < lastRowIndex; i++) {
+            total += this.parseNumber(data[i][4]);
           }
+          console.log("calculatePaymentTotal: total =", total);
+          // dataModel に保存
+          this.dataModel.paymentTotal = total;
+          // 最終行の入金合計セルを Summary に即時転送
+          this.grids.summary.setDataAtCell(1, 4, total, 'internal');
+          // debounce を使って再計算
+          this.debouncedUpdateSummary();
         } catch (error) { console.error('入金合計計算エラー:', error); }
       },
       
@@ -542,43 +583,18 @@
             total += cellValue;
           }
           console.log("calculateExpenseTotal: Computed total =", total);
+          // dataModel に保存
+          this.dataModel.expenseTotal = total;
+          // 最終行の支払合計セルを Summary に即時転送
           this.grids.expense.setDataAtCell(lastRowIndex, 5, total, 'internal');
-          const setValue = this.grids.expense.getDataAtCell(lastRowIndex, 5);
-          console.log("Expense Grid Total Row, Column 5 set to:", setValue);
-          if (this.grids.summary) {
-            // 支払総額/B（summary 行1, 列5）にセット
-            this.grids.summary.setDataAtCell(1, 5, total, 'internal');
-            const summaryValue = this.grids.summary.getDataAtCell(1, 5);
-            console.log("Summary Grid '支払総額/B' (Row1, Col5) set to:", summaryValue);
-            this.calculateProfit();
-          }
+          this.grids.summary.setDataAtCell(1, 5, total, 'internal');
+          // debounce を使って再計算
+          this.debouncedUpdateSummary();
         } catch (error) { console.error('支払合計計算エラー:', error); }
       },
       
-      calculateProfit: function() {
-        if (!this.grids.summary) return;
-        try {
-          const paymentData = this.grids.payment.getData();
-          const travelTotal = this.parseNumber(paymentData[paymentData.length - 1][4]);
-          const expenseData = this.grids.expense.getData();
-          const expenseTotal = this.parseNumber(expenseData[expenseData.length - 1][5]);
-          const profit = travelTotal - expenseTotal;
-          const profitRate = travelTotal > 0 ? (profit / travelTotal * 100).toFixed(1) + '%' : '0%';
-          const basicData = this.grids.basic.getData();
-          let personCount = 0;
-          if (basicData && basicData.length >= 3 && basicData[2].length >= 6) {
-            personCount = this.parseNumber(basicData[2][5]);
-          }
-          const profitPerPerson = personCount > 0 ? Math.round(profit / personCount) : 0;
-          this.grids.summary.setDataAtCell(1, 1, profitRate, 'internal');
-          this.grids.summary.setDataAtCell(1, 2, profit, 'internal');
-          this.grids.summary.setDataAtCell(1, 3, profitPerPerson, 'internal');
-          this.grids.summary.setDataAtCell(1, 4, travelTotal, 'internal');
-          this.grids.summary.setDataAtCell(1, 5, expenseTotal, 'internal');
-          this.grids.summary.setDataAtCell(1, 6, personCount, 'internal');
-          console.log("calculateProfit: travelTotal=", travelTotal, " expenseTotal=", expenseTotal, " profit=", profit, " profitRate=", profitRate, " personCount=", personCount, " profitPerPerson=", profitPerPerson);
-        } catch (error) { console.error('利益計算エラー:', error); }
-      },
+      // 従来の calculateProfit() は updateSummaryFromDataModel() に統合
+      // ※updateSummaryFromDataModel() 内で利益等を再計算します
       
       saveKarte: function() {
         console.log("saveKarte() called");
