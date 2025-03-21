@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>シンプルカルテシステム</title>
+  <title>カルテシステム</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
   <style>
     body {
@@ -60,24 +60,52 @@
       background-color: #1a5e38;
     }
     
-    section {
-      margin-bottom: 30px;
+    /* セクションのスタイル調整 */
+    .section-container {
+      margin-bottom: 25px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
     }
     
-    section h2 {
+    .section-header {
       background-color: #4472C4;
       color: white;
-      padding: 8px 12px;
-      margin: 0 0 10px 0;
+      padding: 8px 15px;
       font-weight: bold;
       font-size: 16px;
-      border-radius: 4px;
+    }
+    
+    /* 各セクション別の色 */
+    .basic-section .section-header {
+      background-color: #4472C4; /* 青 */
+    }
+    
+    .payment-section .section-header {
+      background-color: #70AD47; /* 緑 */
+    }
+    
+    .expense-section .section-header {
+      background-color: #ED7D31; /* オレンジ */
+    }
+    
+    .summary-section .section-header {
+      background-color: #7030A0; /* 紫 */
     }
     
     .grid-container {
       height: auto;
       overflow: hidden;
-      margin-bottom: 20px;
+      margin-bottom: 5px;
+    }
+    
+    /* 行追加ボタン */
+    .add-row-btn {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      font-size: 12px;
+      float: right;
     }
     
     footer {
@@ -166,54 +194,13 @@
       z-index: 9999;
       display: none;
     }
-    
-    /* セクションのスタイル調整 */
-    .section-container {
-      margin-bottom: 25px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    
-    .section-header {
-      background-color: #4472C4;
-      color: white;
-      padding: 8px 15px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    
-    /* 各セクション別の色 */
-    .basic-section .section-header {
-      background-color: #4472C4; /* 青 */
-    }
-    
-    .payment-section .section-header {
-      background-color: #70AD47; /* 緑 */
-    }
-    
-    .expense-section .section-header {
-      background-color: #ED7D31; /* オレンジ */
-    }
-    
-    .summary-section .section-header {
-      background-color: #7030A0; /* 紫 */
-    }
-    
-    /* 行追加ボタン */
-    .add-row-btn {
-      margin-top: 5px;
-      padding: 4px 8px;
-      font-size: 12px;
-      float: right;
-    }
   </style>
 </head>
 <body>
   <div class="app-container">
     <header>
       <div class="app-title">
-        <h1>シンプルカルテシステム</h1>
+        <h1>団体ナビ成約カルテ</h1>
       </div>
       <div class="app-info">
         <div>カルテID: <span id="current-karte-id">新規カルテ</span></div>
@@ -254,7 +241,7 @@
     </main>
 
     <footer>
-      <div>シンプルカルテシステム v1.0</div>
+      <div>カルテシステム v1.0</div>
       <div>接続状態: <span id="connection-status">オンライン</span></div>
     </footer>
   </div>
@@ -329,32 +316,36 @@
       
       // 各テンプレート
       templates: {
-        // 基本情報テンプレート
+        // 基本情報テンプレート（要望に合わせて更新）
         basic: [
-          ['カルテNo', '', '担当者', '', '日付', ''],
-          ['団体名', '', '人数', '', '行先', '']
+          ['カルテNo', '', 'お客様担当者', '', '宿泊日', ''],
+          ['団体名', '', 'お客様電話番号', '', '泊数', ''],
+          ['合計人数', '', '内訳', '', '', ''],
+          ['大人男性', '', '大人女性', '', '子供(小学生)', ''],
+          ['幼児', '', '成約日', '', '利用年度', ''],
+          ['出発地', '', '⇒', '行先', '', '']
         ],
         
-        // 入金情報テンプレート（行追加可能）
+        // 入金情報テンプレート（要望に合わせて更新）
         payment: [
-          ['日付', '項目', '入金額', '備考'],
-          ['', '', '', ''],
-          ['', '', '', ''],
-          ['合計', '', 0, '']
+          ['入金予定日', '入金場所', '入金予定額', '入金日', '入金額', '備考', 'チェック', ''],
+          ['', '', '', '', '', '', '', ''],
+          ['', '', '', '', '', '', '', ''],
+          ['A；入金合計', '', '', '', 0, '', '', '']
         ],
         
-        // 支払情報テンプレート（行追加可能）
+        // 支払情報テンプレート（要望に合わせて更新）
         expense: [
-          ['日付', '項目', '支払額', '備考'],
-          ['', '', '', ''],
-          ['', '', '', ''],
-          ['合計', '', 0, '']
+          ['利用日', '手配先名；該当に〇を付ける', '電話/FAX', '担当者', '支払予定日', '支払金額', 'チェック', '手配完了'],
+          ['', '', '', '', '', '', '', ''],
+          ['', '', '', '', '', '', '', ''],
+          ['B；支払合計', '', '', '', '', 0, '', '']
         ],
         
-        // 収支情報テンプレート
+        // 収支情報テンプレート（要望に合わせて更新）
         summary: [
-          ['入金合計', '', '支払合計', '', '利益', ''],
-          ['', 0, '', 0, '', 0]
+          ['報告日', '利益率', '利益額', '一人粗利', '旅行総額/A', '支払総額/B', '人数', '特補人数'],
+          ['', '', 0, 0, 0, 0, 0, 0]
         ]
       },
       
@@ -379,12 +370,21 @@
           colHeaders: false,
           height: 'auto',
           stretchH: 'all',
-          minRows: 2,
+          minRows: 6,
           minCols: 6,
           licenseKey: 'non-commercial-and-evaluation',
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               this.markHasChanges();
+              // 人数変更を検知して収支情報に反映
+              if (changes) {
+                changes.forEach(([row, col]) => {
+                  // 合計人数セルを更新したら収支情報も更新
+                  if (row === 2 && col === 1) {
+                    this.updateSummary();
+                  }
+                });
+              }
             }
           }
         });
@@ -397,19 +397,27 @@
           height: 'auto',
           stretchH: 'all',
           minRows: 4,
-          minCols: 4,
+          minCols: 8,
           contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
           licenseKey: 'non-commercial-and-evaluation',
           cells: (row, col) => {
             const cellProperties = {};
-            // 入金額列は数値型
-            if (col === 2 && row > 0) {
+            
+            // 入金予定額と入金額の列は数値型
+            if ((col === 2 || col === 4) && row > 0) {
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = {
                 pattern: '0,0',
                 culture: 'ja-JP'
               };
             }
+            
+            // 入金予定日と入金日の列は日付型
+            if ((col === 0 || col === 3) && row > 0) {
+              cellProperties.type = 'date';
+              cellProperties.dateFormat = 'YYYY/MM/DD';
+            }
+            
             // 合計行は読み取り専用
             if (row === this.getRowCount('payment') - 1) {
               cellProperties.readOnly = true;
@@ -417,6 +425,7 @@
                 cellProperties.className = 'total-cell';
               }
             }
+            
             return cellProperties;
           },
           // データ変更時の処理
@@ -433,10 +442,10 @@
             const data = this.grids.payment.getData();
             
             // 合計行が最後の行でない場合は移動
-            if (!data[rowCount-1][0] || data[rowCount-1][0] !== '合計') {
+            if (!data[rowCount-1][0] || !String(data[rowCount-1][0]).includes('入金合計')) {
               // 合計行を探す
               for (let i = 0; i < rowCount; i++) {
-                if (data[i][0] === '合計') {
+                if (data[i][0] && String(data[i][0]).includes('入金合計')) {
                   // 合計行を削除して最後に追加
                   const totalRow = data[i].slice();
                   this.grids.payment.alter('remove_row', i, 1);
@@ -464,19 +473,27 @@
           height: 'auto',
           stretchH: 'all',
           minRows: 4,
-          minCols: 4,
+          minCols: 8,
           contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
           licenseKey: 'non-commercial-and-evaluation',
           cells: (row, col) => {
             const cellProperties = {};
-            // 支払額列は数値型
-            if (col === 2 && row > 0) {
+            
+            // 支払金額の列は数値型
+            if (col === 5 && row > 0) {
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = {
                 pattern: '0,0',
                 culture: 'ja-JP'
               };
             }
+            
+            // 利用日と支払予定日の列は日付型
+            if ((col === 0 || col === 4) && row > 0) {
+              cellProperties.type = 'date';
+              cellProperties.dateFormat = 'YYYY/MM/DD';
+            }
+            
             // 合計行は読み取り専用
             if (row === this.getRowCount('expense') - 1) {
               cellProperties.readOnly = true;
@@ -484,6 +501,7 @@
                 cellProperties.className = 'total-cell';
               }
             }
+            
             return cellProperties;
           },
           // データ変更時の処理
@@ -500,10 +518,10 @@
             const data = this.grids.expense.getData();
             
             // 合計行が最後の行でない場合は移動
-            if (!data[rowCount-1][0] || data[rowCount-1][0] !== '合計') {
+            if (!data[rowCount-1][0] || !String(data[rowCount-1][0]).includes('支払合計')) {
               // 合計行を探す
               for (let i = 0; i < rowCount; i++) {
-                if (data[i][0] === '合計') {
+                if (data[i][0] && String(data[i][0]).includes('支払合計')) {
                   // 合計行を削除して最後に追加
                   const totalRow = data[i].slice();
                   this.grids.expense.alter('remove_row', i, 1);
@@ -531,20 +549,38 @@
           height: 'auto',
           stretchH: 'all',
           minRows: 2,
-          minCols: 6,
+          minCols: 8,
           licenseKey: 'non-commercial-and-evaluation',
           cells: (row, col) => {
             const cellProperties = {};
-            // 数値セルは読み取り専用
-            if (row === 1 && (col === 1 || col === 3 || col === 5)) {
+            
+            // 収支関連の数値セルは読み取り専用
+            if (row === 1 && (col >= 1 && col <= 7)) {
               cellProperties.readOnly = true;
-              cellProperties.type = 'numeric';
-              cellProperties.numericFormat = {
-                pattern: '0,0',
-                culture: 'ja-JP'
-              };
+              
+              // 数値フォーマット
+              if (col !== 1) { // 利益率以外
+                cellProperties.type = 'numeric';
+                cellProperties.numericFormat = {
+                  pattern: '0,0',
+                  culture: 'ja-JP'
+                };
+              }
             }
+            
+            // 報告日は日付型
+            if (row === 1 && col === 0) {
+              cellProperties.type = 'date';
+              cellProperties.dateFormat = 'YYYY/MM/DD';
+            }
+            
             return cellProperties;
+          },
+          // データ変更時の処理
+          afterChange: (changes, source) => {
+            if (source === 'edit' || source === 'paste') {
+              this.markHasChanges();
+            }
           }
         });
       },
@@ -643,6 +679,13 @@
         this.grids.expense.loadData(this.deepCopy(this.templates.expense));
         this.grids.summary.loadData(this.deepCopy(this.templates.summary));
         
+        // 現在の日付を報告日に設定
+        const today = new Date();
+        const formattedDate = today.getFullYear() + '/' + 
+                             ('0' + (today.getMonth() + 1)).slice(-2) + '/' + 
+                             ('0' + today.getDate()).slice(-2);
+        this.grids.summary.setDataAtCell(1, 0, formattedDate, 'internal');
+        
         // 変更フラグをリセット
         this.hasChanges = false;
       },
@@ -655,21 +698,21 @@
         let total = 0;
         const lastRowIndex = data.length - 1;
         
-        // 合計行以外の金額を合計
+        // 合計行以外の金額を合計（入金額列 = インデックス4）
         for (let i = 1; i < lastRowIndex; i++) {
-          const value = this.parseNumber(data[i][2]);
+          const value = this.parseNumber(data[i][4]);
           if (!isNaN(value)) {
             total += value;
           }
         }
         
-        // 合計を表示
-        this.grids.payment.setDataAtCell(lastRowIndex, 2, total, 'internal');
+        // 合計を表示（入金合計行の入金額列 = インデックス4）
+        this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
         
-        // 収支情報に反映
+        // 収支情報に反映（旅行総額/A = インデックス4）
         if (this.grids.summary) {
-          this.grids.summary.setDataAtCell(1, 1, total, 'internal');
-          this.calculateBalance();
+          this.grids.summary.setDataAtCell(1, 4, total, 'internal');
+          this.updateSummary();
         }
       },
       
@@ -681,35 +724,59 @@
         let total = 0;
         const lastRowIndex = data.length - 1;
         
-        // 合計行以外の金額を合計
+        // 合計行以外の金額を合計（支払金額列 = インデックス5）
         for (let i = 1; i < lastRowIndex; i++) {
-          const value = this.parseNumber(data[i][2]);
+          const value = this.parseNumber(data[i][5]);
           if (!isNaN(value)) {
             total += value;
           }
         }
         
-        // 合計を表示
-        this.grids.expense.setDataAtCell(lastRowIndex, 2, total, 'internal');
+        // 合計を表示（支払合計行の支払金額列 = インデックス5）
+        this.grids.expense.setDataAtCell(lastRowIndex, 5, total, 'internal');
         
-        // 収支情報に反映
+        // 収支情報に反映（支払総額/B = インデックス5）
         if (this.grids.summary) {
-          this.grids.summary.setDataAtCell(1, 3, total, 'internal');
-          this.calculateBalance();
+          this.grids.summary.setDataAtCell(1, 5, total, 'internal');
+          this.updateSummary();
         }
       },
       
-      // 収支バランスを計算
-      calculateBalance: function() {
+      // 収支情報の更新
+      updateSummary: function() {
         if (!this.grids.summary) return;
         
-        const data = this.grids.summary.getData();
-        const income = this.parseNumber(data[1][1]);
-        const expense = this.parseNumber(data[1][3]);
-        const balance = income - expense;
+        // 収支データ
+        const summaryData = this.grids.summary.getData();
         
-        // 収支を表示
-        this.grids.summary.setDataAtCell(1, 5, balance, 'internal');
+        // 基本情報から人数を取得
+        const basicData = this.grids.basic.getData();
+        const personCount = this.parseNumber(basicData[2][1]); // 合計人数
+        
+        // 入金合計と支払合計
+        const income = this.parseNumber(summaryData[1][4]); // 旅行総額/A
+        const expense = this.parseNumber(summaryData[1][5]); // 支払総額/B
+        
+        // 利益額の計算
+        const profit = income - expense;
+        
+        // 利益率の計算（ゼロ除算を回避）
+        let profitRate = '0%';
+        if (income > 0) {
+          profitRate = (profit / income * 100).toFixed(1) + '%';
+        }
+        
+        // 一人粗利の計算（ゼロ除算を回避）
+        let profitPerPerson = 0;
+        if (personCount > 0) {
+          profitPerPerson = Math.round(profit / personCount);
+        }
+        
+        // 収支情報を更新
+        this.grids.summary.setDataAtCell(1, 1, profitRate, 'internal'); // 利益率
+        this.grids.summary.setDataAtCell(1, 2, profit, 'internal'); // 利益額
+        this.grids.summary.setDataAtCell(1, 3, profitPerPerson, 'internal'); // 一人粗利
+        this.grids.summary.setDataAtCell(1, 6, personCount, 'internal'); // 人数
       },
       
       // カルテを保存
@@ -739,10 +806,10 @@
         const karteInfo = {
           karteNo: basicData[0][1] || '',
           tantosha: basicData[0][3] || '',
-          date: basicData[0][5] || '',
+          stayDate: basicData[0][5] || '',
           dantaiName: basicData[1][1] || '',
-          personCount: basicData[1][3] || '',
-          destination: basicData[1][5] || ''
+          personCount: basicData[2][1] || '',
+          destination: basicData[5][4] || ''
         };
         
         karteData.karteInfo = karteInfo;
