@@ -192,13 +192,8 @@
       .action-buttons button {
         margin-bottom: 10px;
       }
-      /* grid-container の横スクロールを有効に */
       .grid-container {
         overflow-x: auto !important;
-      }
-      /* Handsontable のコア部分に最小幅を指定 */
-      .handsontable .htCore {
-        min-width: 800px !important;
       }
       #karte-list th, #karte-list td {
         font-size: 14px;
@@ -1052,14 +1047,11 @@
                 const tableHeight = table.offsetHeight;
                 grid.rootElement.style.height = tableHeight + 'px';
                 const container = grid.rootElement.closest('.grid-container');
-                if (container) { 
-                  container.style.height = 'auto'; 
-                  // モバイル表示時にスクロール設定を強制
-                  if (window.innerWidth <= 768) {
-                    container.style.overflowX = 'auto';
-                    container.style.WebkitOverflowScrolling = 'touch';
-                  }
-                }
+                if (container) { container.style.height = 'auto'; }
+                const wtHolder = grid.rootElement.querySelector('.wtHolder');
+                if (wtHolder) { wtHolder.style.height = 'auto'; }
+                const wtSpreader = grid.rootElement.querySelector('.wtSpreader');
+                if (wtSpreader) { wtSpreader.style.height = 'auto'; }
                 console.log(`${gridName} の高さ調整: tableHeight=${tableHeight}`);
               }
             } catch (e) { console.error(`${gridName} の高さ調整エラー:`, e); }
