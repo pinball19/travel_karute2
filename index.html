@@ -109,9 +109,17 @@
     /* 行追加ボタン */
     .add-row-btn {
       margin: 5px 10px 10px 0;
-      padding: 4px 8px;
-      font-size: 12px;
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
       float: right;
+    }
+    
+    .add-row-btn:hover {
+      background-color: #45a049;
     }
     
     /* モーダル */
@@ -160,7 +168,8 @@
       display: none;
     }
     
-    /* スクロールバーを非表示にするスタイル */
+    /* スクロールバーを完全に非表示にする追加スタイル */
+    /* Handsontableのスクロールバーを非表示に */
     .handsontable .wtHolder, 
     .handsontable .ht_master .wtHolder,
     .handsontable .wtHider {
@@ -173,31 +182,35 @@
       height: auto !important;
     }
     
-    /* 合計行を強調表示 */
-    .handsontable td.total-cell {
-      background-color: #e6f2ff;
-      font-weight: bold;
-    }
-    
-    /* 水平方向のスクロールも必要に応じて非表示に */
-    .handsontable .wtHolder .wtHider,
+    /* テーブルの全セルを表示 */
     .handsontable .htCore {
-      width: 100% !important;
+      height: auto !important; 
     }
     
     /* スクロールバー要素そのものを非表示に */
     .handsontable ::-webkit-scrollbar {
-      display: none;
+      display: none !important;
     }
     
     /* IEとEdge用 */
     .handsontable {
-      -ms-overflow-style: none;
+      -ms-overflow-style: none !important;
     }
     
     /* Firefox用 */
     .handsontable {
-      scrollbar-width: none;
+      scrollbar-width: none !important;
+    }
+    
+    /* ホットテーブルのビューポート制限を解除 */
+    .handsontable .wtSpreader {
+      height: auto !important;
+      width: auto !important;
+    }
+    
+    /* handosontableの上部コントロールバーを調整 */
+    .ht_clone_top {
+      z-index: 101 !important;
     }
   </style>
 </head>
@@ -222,24 +235,24 @@
 
     <main>
       <!-- すべてのセクションを縦に並べて表示 -->
-      <div class="section-container basic-section">
+      <div class="section-container basic-section" id="basic-section">
         <div class="section-header">◆ 基本情報</div>
         <div id="basic-grid" class="grid-container"></div>
       </div>
       
-      <div class="section-container payment-section">
+      <div class="section-container payment-section" id="payment-section">
         <div class="section-header">◆ 入金情報</div>
         <div id="payment-grid" class="grid-container"></div>
         <button id="add-payment-row" class="add-row-btn">行を追加</button>
       </div>
       
-      <div class="section-container expense-section">
+      <div class="section-container expense-section" id="expense-section">
         <div class="section-header">◆ 支払情報</div>
         <div id="expense-grid" class="grid-container"></div>
         <button id="add-expense-row" class="add-row-btn">行を追加</button>
       </div>
       
-      <div class="section-container summary-section">
+      <div class="section-container summary-section" id="summary-section">
         <div class="section-header">◆ 収支情報</div>
         <div id="summary-grid" class="grid-container"></div>
       </div>
@@ -301,8 +314,31 @@
     };
     
     // Firebase初期化
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    let db = null;
+    
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      
+      // オフラインパーシステンスを有効化（可能であれば）
+      try {
+        db.enablePersistence({ synchronizeTabs: true })
+          .catch(function(err) {
+            if (err.code == 'failed-precondition') {
+              console.warn("Firestore オフラインパーシステンスは複数タブでは使用できません");
+            } else if (err.code == 'unimplemented') {
+              console.warn("このブラウザではFirestore オフラインパーシステンスがサポートされていません");
+            }
+          });
+      } catch (e) {
+        console.warn("オフラインパーシステンスの設定エラー:", e);
+      }
+    } catch (error) {
+      console.error("Firebase初期化エラー:", error);
+      setTimeout(() => {
+        alert("サーバー接続に問題が発生しました。ページをリロードしてください。");
+      }, 1000);
+    }
     
     // カルテアプリケーション
     const KarteApp = {
@@ -322,7 +358,7 @@
       
       // 各テンプレート
       templates: {
-        // 基本情報テンプレート - 指定された項目に変更
+        // 基本情報テンプレート
         basic: [
           ['カルテNo', '', 'お客様担当者', '', '宿泊日', ''],
           ['団体名', '', 'お客様電話番号', '', '泊数', ''],
@@ -331,7 +367,7 @@
           ['利用年度', '', '出発地', '', '行先', '']
         ],
         
-        // 入金情報テンプレート - 指定された項目に変更
+        // 入金情報テンプレート
         payment: [
           ['入金予定日', '入金場所', '入金予定額', '入金日', '入金額', '備考', 'チェック'],
           ['', '', '', '', '', '', ''],
@@ -339,7 +375,7 @@
           ['A 入金合計', '', '', '', 0, '', '']
         ],
         
-        // 支払情報テンプレート - 指定された項目に変更
+        // 支払情報テンプレート
         expense: [
           ['利用日', '手配先名（該当に〇を付ける）', '電話/FAX', '担当者', '支払予定日', '支払金額', 'チェック', '手配完了'],
           ['', '', '', '', '', '', '', ''],
@@ -347,7 +383,7 @@
           ['B 支払合計', '', '', '', '', 0, '', '']
         ],
         
-        // 収支情報テンプレート - 指定された項目に変更
+        // 収支情報テンプレート
         summary: [
           ['報告日', '', '利益率', '', '利益額', ''],
           ['一人粗利', '', '旅行総額/A', '', '支払総額/B', ''],
@@ -382,20 +418,19 @@
           height: 'auto',
           stretchH: 'all',
           minCols: 6,
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
           licenseKey: 'non-commercial-and-evaluation',
+          viewportRowRenderingOffset: 100, // すべての行を描画できるよう大きな値を設定
+          renderAllRows: true,         // すべての行を一度に描画
+          
+          // スクロールを無効化
+          overflow: 'visible',
+          
           // 高さの自動調整を行う設定
           afterRender: function() {
-            try {
-              // テーブルが描画された後に高さを自動調整
-              const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
-              this.rootElement.style.height = tableHeight + 'px';
-            } catch (e) {
-              console.error('高さ調整エラー:', e);
-            }
+            const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
+            this.rootElement.style.height = tableHeight + 'px';
           },
+          
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               this.markHasChanges();
@@ -411,21 +446,20 @@
           height: 'auto',
           stretchH: 'all',
           minRows: 4,
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
           contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
           licenseKey: 'non-commercial-and-evaluation',
+          viewportRowRenderingOffset: 100, // すべての行を描画できるよう大きな値を設定
+          renderAllRows: true,         // すべての行を一度に描画
+          
+          // スクロールを無効化
+          overflow: 'visible',
+          
           // 高さの自動調整を行う設定
           afterRender: function() {
-            try {
-              // テーブルが描画された後に高さを自動調整
-              const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
-              this.rootElement.style.height = tableHeight + 'px';
-            } catch (e) {
-              console.error('高さ調整エラー:', e);
-            }
+            const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
+            this.rootElement.style.height = tableHeight + 'px';
           },
+          
           cells: (row, col) => {
             const cellProperties = {};
             // 入金予定額、入金額列は数値型
@@ -436,6 +470,10 @@
                 culture: 'ja-JP'
               };
             }
+            // チェック列はチェックボックス
+            if (col === 6 && row > 0 && row < this.getRowCount('payment') - 1) {
+              cellProperties.type = 'checkbox';
+            }
             // 合計行は読み取り専用
             if (row === this.getRowCount('payment') - 1) {
               cellProperties.readOnly = true;
@@ -445,6 +483,7 @@
             }
             return cellProperties;
           },
+          
           // データ変更時の処理
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
@@ -452,6 +491,7 @@
               this.markHasChanges();
             }
           },
+          
           // 行追加・削除時の処理
           afterCreateRow: (index, amount, source) => {
             // 合計行が常に最後になるように調整
@@ -462,7 +502,7 @@
             if (!data[rowCount-1][0] || !data[rowCount-1][0].startsWith('A ')) {
               // 合計行を探す
               for (let i = 0; i < rowCount; i++) {
-                if (data[i][0] && data[i][0].startsWith('A ')) {
+                if (data[i][0] && String(data[i][0]).startsWith('A ')) {
                   // 合計行を削除して最後に追加
                   const totalRow = data[i].slice();
                   this.grids.payment.alter('remove_row', i, 1);
@@ -481,6 +521,7 @@
               this.adjustTableHeights();
             }, 100);
           },
+          
           afterRemoveRow: (index, amount) => {
             this.calculatePaymentTotal();
             this.markHasChanges();
@@ -500,21 +541,20 @@
           height: 'auto',
           stretchH: 'all',
           minRows: 4,
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
           contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
           licenseKey: 'non-commercial-and-evaluation',
+          viewportRowRenderingOffset: 100, // すべての行を描画できるよう大きな値を設定
+          renderAllRows: true,         // すべての行を一度に描画
+          
+          // スクロールを無効化
+          overflow: 'visible',
+          
           // 高さの自動調整を行う設定
           afterRender: function() {
-            try {
-              // テーブルが描画された後に高さを自動調整
-              const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
-              this.rootElement.style.height = tableHeight + 'px';
-            } catch (e) {
-              console.error('高さ調整エラー:', e);
-            }
+            const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
+            this.rootElement.style.height = tableHeight + 'px';
           },
+          
           cells: (row, col) => {
             const cellProperties = {};
             // 支払金額列は数値型
@@ -538,6 +578,7 @@
             }
             return cellProperties;
           },
+          
           // データ変更時の処理
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
@@ -545,6 +586,7 @@
               this.markHasChanges();
             }
           },
+          
           // 行追加・削除時の処理
           afterCreateRow: (index, amount, source) => {
             // 合計行が常に最後になるように調整
@@ -555,7 +597,7 @@
             if (!data[rowCount-1][0] || !data[rowCount-1][0].startsWith('B ')) {
               // 合計行を探す
               for (let i = 0; i < rowCount; i++) {
-                if (data[i][0] && data[i][0].startsWith('B ')) {
+                if (data[i][0] && String(data[i][0]).startsWith('B ')) {
                   // 合計行を削除して最後に追加
                   const totalRow = data[i].slice();
                   this.grids.expense.alter('remove_row', i, 1);
@@ -574,6 +616,7 @@
               this.adjustTableHeights();
             }, 100);
           },
+          
           afterRemoveRow: (index, amount) => {
             this.calculateExpenseTotal();
             this.markHasChanges();
@@ -592,20 +635,19 @@
           colHeaders: false,
           height: 'auto',
           stretchH: 'all',
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
           licenseKey: 'non-commercial-and-evaluation',
+          viewportRowRenderingOffset: 100, // すべての行を描画できるよう大きな値を設定
+          renderAllRows: true,         // すべての行を一度に描画
+          
+          // スクロールを無効化
+          overflow: 'visible',
+          
           // 高さの自動調整を行う設定
           afterRender: function() {
-            try {
-              // テーブルが描画された後に高さを自動調整
-              const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
-              this.rootElement.style.height = tableHeight + 'px';
-            } catch (e) {
-              console.error('高さ調整エラー:', e);
-            }
+            const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
+            this.rootElement.style.height = tableHeight + 'px';
           },
+          
           cells: (row, col) => {
             const cellProperties = {};
             // 数値セルの設定
@@ -639,6 +681,7 @@
             
             return cellProperties;
           },
+          
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               this.markHasChanges();
@@ -679,63 +722,97 @@
         // 入金情報に行を追加するボタン
         document.getElementById('add-payment-row').addEventListener('click', () => {
           const rowCount = this.grids.payment.countRows();
+          const lastRowIndex = rowCount - 1;
           
-          // 行追加のロジック（修正版）
           try {
-            // 方法1: 公式メソッドを試す
-            this.grids.payment.alter('insertRow', rowCount - 1, 1);
-          } catch (e) {
-            console.log('insertRow失敗、代替方法を試します:', e);
+            // 複数の方法を試す
+            console.log('入金テーブルに行を追加します。行数:', rowCount);
+            
             try {
-              // 方法2: データを直接操作
-              const currentData = this.grids.payment.getData();
-              const newData = [
-                ...currentData.slice(0, rowCount - 1),
-                Array(currentData[0].length).fill(''),  // 新しい空の行
-                currentData[rowCount - 1]               // 合計行
-              ];
-              this.grids.payment.loadData(newData);
-            } catch (e2) {
-              console.error('行追加エラー:', e2);
-              this.showNotification('行の追加に失敗しました', 'error');
+              // 方法1: insertRow
+              this.grids.payment.alter('insertRow', lastRowIndex);
+            } catch (e1) {
+              console.warn('方法1失敗:', e1);
+              try {
+                // 方法2: insert_row
+                this.grids.payment.alter('insert_row', lastRowIndex);
+              } catch (e2) {
+                console.warn('方法2失敗:', e2);
+                try {
+                  // 方法3: データ操作方法
+                  const currentData = this.grids.payment.getData();
+                  const totalRow = currentData[lastRowIndex].slice();
+                  
+                  // 新しい行を挿入し、合計行を最後に移動
+                  currentData.splice(lastRowIndex, 1); // 合計行を削除
+                  const newRow = Array(currentData[0].length).fill('');
+                  currentData.push(newRow); // 空の行を追加
+                  currentData.push(totalRow); // 合計行を最後に追加
+                  
+                  this.grids.payment.loadData(currentData);
+                  console.log('データ直接操作で行を追加しました');
+                } catch (e3) {
+                  console.error('全ての行追加方法が失敗しました:', e3);
+                  alert('行の追加に失敗しました。ページを更新してからもう一度お試しください。');
+                }
+              }
             }
+            
+            // 高さを再調整
+            setTimeout(() => {
+              this.adjustTableHeights();
+            }, 100);
+          } catch (error) {
+            console.error('行追加処理エラー:', error);
           }
-          
-          // 高さを再調整
-          setTimeout(() => {
-            this.adjustTableHeights();
-          }, 100);
         });
         
         // 支払情報に行を追加するボタン
         document.getElementById('add-expense-row').addEventListener('click', () => {
           const rowCount = this.grids.expense.countRows();
+          const lastRowIndex = rowCount - 1;
           
-          // 行追加のロジック（修正版）
           try {
-            // 方法1: 公式メソッドを試す
-            this.grids.expense.alter('insertRow', rowCount - 1, 1);
-          } catch (e) {
-            console.log('insertRow失敗、代替方法を試します:', e);
+            // 複数の方法を試す
+            console.log('支払テーブルに行を追加します。行数:', rowCount);
+            
             try {
-              // 方法2: データを直接操作
-              const currentData = this.grids.expense.getData();
-              const newData = [
-                ...currentData.slice(0, rowCount - 1),
-                Array(currentData[0].length).fill(''),  // 新しい空の行
-                currentData[rowCount - 1]               // 合計行
-              ];
-              this.grids.expense.loadData(newData);
-            } catch (e2) {
-              console.error('行追加エラー:', e2);
-              this.showNotification('行の追加に失敗しました', 'error');
+              // 方法1: insertRow
+              this.grids.expense.alter('insertRow', lastRowIndex);
+            } catch (e1) {
+              console.warn('方法1失敗:', e1);
+              try {
+                // 方法2: insert_row
+                this.grids.expense.alter('insert_row', lastRowIndex);
+              } catch (e2) {
+                console.warn('方法2失敗:', e2);
+                try {
+                  // 方法3: データ操作方法
+                  const currentData = this.grids.expense.getData();
+                  const totalRow = currentData[lastRowIndex].slice();
+                  
+                  // 新しい行を挿入し、合計行を最後に移動
+                  currentData.splice(lastRowIndex, 1); // 合計行を削除
+                  const newRow = Array(currentData[0].length).fill('');
+                  currentData.push(newRow); // 空の行を追加
+                  currentData.push(totalRow); // 合計行を最後に追加
+                  
+                  this.grids.expense.loadData(currentData);
+                  console.log('データ直接操作で行を追加しました');
+                } catch (e3) {
+                  console.error('全ての行追加方法が失敗しました:', e3);
+                  alert('行の追加に失敗しました。ページを更新してからもう一度お試しください。');
+                }
+              }
             }
+            
+            // 高さを再調整
+            setTimeout(() => {
+              this.adjustTableHeights();
+            }, 100);
+          } catch (error) {
+            console.error('行追加処理エラー:', error);
           }
-          
-          // 高さを再調整
-          setTimeout(() => {
-            this.adjustTableHeights();
-          }, 100);
         });
         
         // モーダル関連
@@ -768,53 +845,21 @@
           this.showNotification('オフライン状態になりました', 'warning');
         });
         
+        // ウィンドウサイズ変更時に高さを調整
+        window.addEventListener('resize', () => {
+          // デバウンス処理
+          clearTimeout(this.resizeTimer);
+          this.resizeTimer = setTimeout(() => {
+            this.adjustTableHeights();
+          }, 200);
+        });
+        
         // ページを離れる前に変更を確認
         window.addEventListener('beforeunload', (e) => {
           if (this.hasChanges) {
             e.preventDefault();
             e.returnValue = '保存されていない変更があります。ページを離れますか？';
             return e.returnValue;
-          }
-        });
-        
-        // ウィンドウリサイズ時に高さを再調整
-        window.addEventListener('resize', () => {
-          // デバウンスして過剰な呼び出しを防止
-          if (this._resizeTimer) {
-            clearTimeout(this._resizeTimer);
-          }
-          this._resizeTimer = setTimeout(() => {
-            this.adjustTableHeights();
-          }, 200);
-        });
-      },
-      
-      // 高さ調整ヘルパー関数
-      adjustTableHeights: function() {
-        ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
-          if (this.grids[gridName]) {
-            const grid = this.grids[gridName];
-            try {
-              const table = grid.rootElement.querySelector('.htCore');
-              if (table) {
-                const tableHeight = table.offsetHeight;
-                grid.rootElement.style.height = tableHeight + 'px';
-                
-                // コンテナの高さも調整
-                const container = grid.rootElement.closest('.grid-container');
-                if (container) {
-                  container.style.height = tableHeight + 'px';
-                }
-                
-                // 親セクションの高さも自動化
-                const section = container.closest('.section-container');
-                if (section) {
-                  section.style.height = 'auto';
-                }
-              }
-            } catch (e) {
-              console.error(`${gridName}の高さ調整中にエラーが発生しました:`, e);
-            }
           }
         });
       },
@@ -929,6 +974,96 @@
         this.grids.summary.setDataAtCell(1, 1, profitPerPerson, 'internal');
       },
       
+      // Firebaseに保存できる形式にデータを変換するヘルパーメソッド
+      prepareDataForFirebase: function(data) {
+        if (!data || !Array.isArray(data)) {
+          return [];
+        }
+        
+        // データを深くコピーして変更
+        const processedData = JSON.parse(JSON.stringify(data));
+        
+        // 配列の各要素を処理
+        return processedData.map(row => {
+          // 各行も配列であることを確認
+          if (Array.isArray(row)) {
+            // 各セルの内容を適切に変換
+            return row.map(cell => {
+              // nullやundefinedを空文字に変換
+              if (cell === null || cell === undefined) {
+                return '';
+              }
+              
+              // オブジェクトや配列をJSON文字列に変換
+              if (typeof cell === 'object') {
+                return JSON.stringify(cell);
+              }
+              
+              // それ以外はそのまま返す
+              return cell;
+            });
+          } else {
+            // 行が配列でない場合は空の配列を返す
+            console.warn('行が配列ではありません:', row);
+            return [];
+          }
+        });
+      },
+      
+      // 基本情報からカルテ情報を抽出するヘルパーメソッド
+      extractKarteInfo: function(basicData) {
+        const karteInfo = {};
+        
+        try {
+          // 基本的な情報を抽出
+          if (basicData && basicData.length >= 3) {
+            // カルテNo
+            if (basicData[0] && basicData[0].length >= 2) {
+              karteInfo.karteNo = basicData[0][1] || '';
+            }
+            
+            // お客様担当者
+            if (basicData[0] && basicData[0].length >= 4) {
+              karteInfo.tantosha = basicData[0][3] || '';
+            }
+            
+            // 団体名
+            if (basicData[1] && basicData[1].length >= 2) {
+              karteInfo.dantaiName = basicData[1][1] || '';
+            }
+            
+            // お客様電話番号
+            if (basicData[1] && basicData[1].length >= 4) {
+              karteInfo.phoneNumber = basicData[1][3] || '';
+            }
+            
+            // 宿泊日
+            if (basicData[0] && basicData[0].length >= 6) {
+              karteInfo.stayDate = basicData[0][5] || '';
+            }
+            
+            // 泊数
+            if (basicData[1] && basicData[1].length >= 6) {
+              karteInfo.nights = basicData[1][5] || '';
+            }
+            
+            // 合計人数
+            if (basicData[2] && basicData[2].length >= 2) {
+              karteInfo.personCount = basicData[2][1] || '';
+            }
+            
+            // 行先
+            if (basicData[4] && basicData[4].length >= 6) {
+              karteInfo.destination = basicData[4][5] || '';
+            }
+          }
+        } catch (e) {
+          console.error('カルテ情報抽出エラー:', e);
+        }
+        
+        return karteInfo;
+      },
+      
       // カルテを保存
       saveKarte: function() {
         // オフライン確認
@@ -940,66 +1075,67 @@
         // 保存中表示
         document.getElementById('last-saved').textContent = '保存中...';
         
-        // カルテデータを収集
-        const karteData = {
-          basicData: this.grids.basic.getData(),
-          paymentData: this.grids.payment.getData(),
-          expenseData: this.grids.expense.getData(),
-          summaryData: this.grids.summary.getData(),
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        // 基本情報から識別データを抽出
-        const basicData = this.grids.basic.getData();
-        
-        // カルテNo、団体名などをkarteInfoとして保存（検索用）
-        const karteInfo = {
-          karteNo: basicData[0][1] || '',
-          tantosha: basicData[0][3] || '',
-          dantaiName: basicData[1][1] || '',
-          phoneNumber: basicData[1][3] || '',
-          stayDate: basicData[0][5] || '',
-          nights: basicData[1][5] || '',
-          personCount: basicData[2][1] || '',
-          destination: basicData[4][5] || ''
-        };
-        
-        karteData.karteInfo = karteInfo;
-        
-        // 保存処理
-        let savePromise;
-        
-        if (this.currentId) {
-          // 既存のカルテを更新
-          savePromise = db.collection('karte').doc(this.currentId).update(karteData);
-        } else {
-          // 新規カルテを作成
-          savePromise = db.collection('karte').add(karteData)
-            .then(docRef => {
-              this.currentId = docRef.id;
-              return docRef;
+        try {
+          // 各グリッドのデータを取得して Firebase 互換形式に変換
+          const basicData = this.grids.basic ? this.prepareDataForFirebase(this.grids.basic.getData()) : [];
+          const paymentData = this.grids.payment ? this.prepareDataForFirebase(this.grids.payment.getData()) : [];
+          const expenseData = this.grids.expense ? this.prepareDataForFirebase(this.grids.expense.getData()) : [];
+          const summaryData = this.grids.summary ? this.prepareDataForFirebase(this.grids.summary.getData()) : [];
+          
+          // カルテデータを収集
+          const karteData = {
+            basicData: basicData,
+            paymentData: paymentData,
+            expenseData: expenseData,
+            summaryData: summaryData,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          
+          // 基本情報から識別データを抽出
+          const karteInfo = this.extractKarteInfo(basicData);
+          karteData.karteInfo = karteInfo;
+          
+          console.log('保存するデータ:', JSON.stringify(karteData));
+          
+          // 保存処理
+          let savePromise;
+          
+          if (this.currentId) {
+            // 既存のカルテを更新
+            savePromise = db.collection('karte').doc(this.currentId).update(karteData);
+          } else {
+            // 新規カルテを作成
+            savePromise = db.collection('karte').add(karteData)
+              .then(docRef => {
+                this.currentId = docRef.id;
+                return docRef;
+              });
+          }
+          
+          savePromise
+            .then(() => {
+              const now = new Date();
+              document.getElementById('last-saved').textContent = now.toLocaleString();
+              
+              // カルテIDを表示
+              document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
+              
+              // 変更フラグをリセット
+              this.hasChanges = false;
+              
+              // 保存成功通知
+              this.showNotification('カルテを保存しました', 'success');
+            })
+            .catch(error => {
+              console.error('保存エラー:', error);
+              document.getElementById('last-saved').textContent = '保存失敗';
+              this.showNotification('保存に失敗しました: ' + error.message, 'error');
             });
+        } catch (error) {
+          console.error('データ準備エラー:', error);
+          document.getElementById('last-saved').textContent = '保存失敗';
+          this.showNotification('データの準備中にエラーが発生しました', 'error');
         }
-        
-        savePromise
-          .then(() => {
-            const now = new Date();
-            document.getElementById('last-saved').textContent = now.toLocaleString();
-            
-            // カルテIDを表示
-            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
-            
-            // 変更フラグをリセット
-            this.hasChanges = false;
-            
-            // 保存成功通知
-            this.showNotification('カルテを保存しました', 'success');
-          })
-          .catch(error => {
-            console.error('保存エラー:', error);
-            document.getElementById('last-saved').textContent = '保存失敗';
-            this.showNotification('保存に失敗しました: ' + error.message, 'error');
-          });
       },
       
       // カルテリストを読み込む
@@ -1160,7 +1296,7 @@
               // 変更フラグをリセット
               this.hasChanges = false;
               
-              // テーブルの高さを調整
+              // 高さを調整
               setTimeout(() => {
                 this.adjustTableHeights();
               }, 100);
@@ -1220,12 +1356,16 @@
           
           // ファイル名を生成
           const basicData = this.grids.basic.getData();
-          const karteNo = basicData[0][1] || 'カルテ';
+          let karteNo = '';
+          if (basicData && basicData.length > 0 && basicData[0].length > 1) {
+            karteNo = basicData[0][1] || '';
+          }
+          
           const today = new Date();
           const dateStr = today.getFullYear() +
                          ('0' + (today.getMonth() + 1)).slice(-2) +
                          ('0' + today.getDate()).slice(-2);
-          const filename = `${karteNo}_${dateStr}.xlsx`;
+          const filename = `${karteNo || 'カルテ'}_${dateStr}.xlsx`;
           
           // ファイルとして保存
           XLSX.writeFile(wb, filename);
@@ -1292,6 +1432,47 @@
       // 深いコピーを作成
       deepCopy: function(obj) {
         return JSON.parse(JSON.stringify(obj));
+      },
+      
+      // テーブルの高さを自動調整するヘルパーメソッド
+      adjustTableHeights: function() {
+        ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
+          if (this.grids[gridName]) {
+            const grid = this.grids[gridName];
+            try {
+              // テーブルを再描画
+              grid.render();
+              
+              // テーブルの実際の高さを取得
+              const table = grid.rootElement.querySelector('.htCore');
+              if (table) {
+                const tableHeight = table.offsetHeight;
+                
+                // テーブル要素の高さを設定
+                grid.rootElement.style.height = tableHeight + 'px';
+                
+                // コンテナの高さも調整
+                const container = grid.rootElement.closest('.grid-container');
+                if (container) {
+                  container.style.height = 'auto';
+                }
+                
+                // 必要に応じてスプレッダーとホルダーの高さも調整
+                const wtHolder = grid.rootElement.querySelector('.wtHolder');
+                if (wtHolder) {
+                  wtHolder.style.height = 'auto';
+                }
+                
+                const wtSpreader = grid.rootElement.querySelector('.wtSpreader');
+                if (wtSpreader) {
+                  wtSpreader.style.height = 'auto';
+                }
+              }
+            } catch (e) {
+              console.error(`${gridName}の高さ調整中にエラー:`, e);
+            }
+          }
+        });
       }
     };
     
