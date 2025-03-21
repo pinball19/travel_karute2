@@ -484,8 +484,8 @@
                     const totalRow = data[i].slice();
                     // まず合計行を削除
                     this.alter('remove_row', i, 1);
-                    // 最終行の下に合計行を新しく追加
-                    this.alter('row_below', rowCount - 2, 1);
+                    // 最後の1つ手前に行を追加
+                    this.alter('insert_row', rowCount - 1, 1);
                     this.setDataAtRow(rowCount - 1, totalRow);
                     break;
                   }
@@ -555,7 +555,8 @@
                   if (data[i][0] && String(data[i][0]).startsWith('B ')) {
                     const totalRow = data[i].slice();
                     this.alter('remove_row', i, 1);
-                    this.alter('row_below', rowCount - 2, 1);
+                    // 最後の1つ手前に挿入
+                    this.alter('insert_row', rowCount - 1, 1);
                     this.setDataAtRow(rowCount - 1, totalRow);
                     break;
                   }
@@ -599,7 +600,7 @@
                 cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
               }
               
-              // 一部は読み取り専用
+              // 読み取り専用セル
               const readOnlyCells = [
                 [0, 3], // 利益率
                 [0, 5], // 利益額
@@ -646,20 +647,19 @@
         document.getElementById('add-payment-row').addEventListener('click', () => {
           const hot = this.grids.payment;
           const rowCount = hot.countRows();
-          const lastRowIndex = rowCount - 1;
           try {
-            // 行を「最終行の下」に挿入 => 'row_below'
-            hot.alter('row_below', lastRowIndex, 1);
+            // 最終行の下に 1 行を追加 → index = rowCount
+            hot.alter('insert_row', rowCount, 1);
             setTimeout(() => {
               this.adjustTableHeights();
             }, 100);
           } catch (error) {
             console.error('行追加処理エラー:', error);
-            // 代替手段としてデータ配列操作
+            // 代替手段としてデータ操作
             try {
               const currentData = hot.getData();
-              const totalRow = currentData[lastRowIndex].slice();
-              currentData.splice(lastRowIndex, 1);
+              const totalRow = currentData[rowCount - 1].slice();
+              currentData.splice(rowCount - 1, 1);
               currentData.push(Array(totalRow.length).fill(''));
               currentData.push(totalRow);
               hot.loadData(currentData);
@@ -675,9 +675,8 @@
         document.getElementById('add-expense-row').addEventListener('click', () => {
           const hot = this.grids.expense;
           const rowCount = hot.countRows();
-          const lastRowIndex = rowCount - 1;
           try {
-            hot.alter('row_below', lastRowIndex, 1);
+            hot.alter('insert_row', rowCount, 1);
             setTimeout(() => {
               this.adjustTableHeights();
             }, 100);
@@ -685,8 +684,8 @@
             console.error('行追加処理エラー:', error);
             try {
               const currentData = hot.getData();
-              const totalRow = currentData[lastRowIndex].slice();
-              currentData.splice(lastRowIndex, 1);
+              const totalRow = currentData[rowCount - 1].slice();
+              currentData.splice(rowCount - 1, 1);
               currentData.push(Array(totalRow.length).fill(''));
               currentData.push(totalRow);
               hot.loadData(currentData);
@@ -740,6 +739,33 @@
           }
         });
       },
+
+      // ========= 通知を表示するメソッド（追加） =========
+      showNotification: function(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        if (!notification) return;
+        
+        notification.textContent = message;
+        switch (type) {
+          case 'success':
+            notification.style.backgroundColor = '#4caf50';
+            break;
+          case 'error':
+            notification.style.backgroundColor = '#f44336';
+            break;
+          case 'warning':
+            notification.style.backgroundColor = '#ff9800';
+            break;
+          default:
+            notification.style.backgroundColor = '#2196F3';
+        }
+        // 表示
+        notification.style.display = 'block';
+        // 3秒後に消す
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 3000);
+      },
       
       // ========= 新規カルテを作成 =========
       createNew: function() {
@@ -758,7 +784,7 @@
         const m = ('0' + (today.getMonth() + 1)).slice(-2);
         const d = ('0' + today.getDate()).slice(-2);
         const formattedDate = `${y}/${m}/${d}`;
-
+        
         // 報告日(summary[0,1])と、記入日(basic[0,5])にセット
         this.grids.summary.setDataAtCell(0, 1, formattedDate, 'internal');
         this.grids.basic.setDataAtCell(0, 5, formattedDate, 'internal');
@@ -927,15 +953,10 @@
       
       // ========= Firestore向けに二重配列を変換 =========
       prepareDataForFirebase: function(data) {
-        // ここで配列に含まれる全てのセル値を「Firestoreがサポートする値」に正規化
         if (!data || !Array.isArray(data)) {
           return [];
         }
-        
-        // 深いコピー
         const processedData = JSON.parse(JSON.stringify(data));
-        
-        // セルを文字列・数値などに揃える
         return processedData.map(row => {
           if (!Array.isArray(row)) return [];
           return row.map(cell => {
@@ -946,23 +967,18 @@
       
       // ========= セル値の正規化 =========
       cleanCellValue: function(cell) {
-        // undefined/null → 空文字
         if (cell === undefined || cell === null) {
           return '';
         }
-        // NaN → 0 にしておく（または '' にするなど好みで）
         if (typeof cell === 'number' && isNaN(cell)) {
           return 0;
         }
-        // Date オブジェクト → ISO文字列
         if (cell instanceof Date) {
           return cell.toISOString();
         }
-        // オブジェクト(Handsontableでcheckboxがtrue/falseになる等) → JSON文字列化
         if (typeof cell === 'object') {
           return JSON.stringify(cell);
         }
-        // それ以外(文字列や正常な数値)はそのまま
         return cell;
       },
       
@@ -1027,7 +1043,6 @@
               listBody.innerHTML = '<tr><td colspan="7">カルテがありません</td></tr>';
               return;
             }
-            
             let html = '';
             querySnapshot.forEach(doc => {
               const data = doc.data();
@@ -1129,7 +1144,6 @@
           .then(() => {
             this.showNotification('カルテを削除しました', 'success');
             this.loadKarteList();
-            
             // 削除したカルテが表示中だった場合は新規作成
             if (this.currentId === id) {
               this.createNew();
@@ -1145,7 +1159,6 @@
       exportToExcel: function() {
         try {
           const wb = XLSX.utils.book_new();
-          
           const basicWs   = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
           const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
           const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
@@ -1156,7 +1169,6 @@
           XLSX.utils.book_append_sheet(wb, expenseWs, '支払情報');
           XLSX.utils.book_append_sheet(wb, summaryWs, '収支情報');
           
-          // ファイル名
           const basicData = this.grids.basic.getData();
           let karteNo = '';
           if (basicData && basicData.length > 0 && basicData[0].length > 1) {
@@ -1226,7 +1238,6 @@
         if (typeof value === 'number') {
           return isNaN(value) ? 0 : value;
         }
-        // カンマなどを除去
         const cleanValue = String(value).replace(/[^\d.-]/g, '');
         const number = parseFloat(cleanValue);
         return isNaN(number) ? 0 : number;
