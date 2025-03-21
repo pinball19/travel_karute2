@@ -25,6 +25,12 @@ const SummaryInfoManager = {
       colHeaders: false,
       colWidths: COLUMN_WIDTHS,
       mergeCells: SUMMARY_MERGED_CELLS,
+      height: 'auto',        // 高さを自動調整
+      autoRowSize: true,     // 行高さを自動調整
+      stretchH: 'all',       // 横幅をコンテナに合わせる
+      viewportRowRenderingOffset: 1000, // 十分な行を一度にレンダリング
+      renderAllRows: true,   // すべての行を一度にレンダリング
+      
       // セルのカスタマイズ
       cells: function(row, col) {
         const cellProperties = {};
@@ -209,13 +215,25 @@ const SummaryInfoManager = {
   adjustHeight: function() {
     if (!this.hot) return;
     
-    // コンテナの高さをテーブルサイズに合わせて調整
-    const container = this.hot.rootElement;
-    if (container) {
-      const table = container.querySelector('.handsontable');
+    try {
+      // 再レンダリングして高さを更新
+      this.hot.render();
+      
+      // テーブルの実際の高さを取得
+      const table = this.hot.rootElement.querySelector('.htCore');
       if (table) {
-        container.style.height = table.offsetHeight + 'px';
+        // コンテナの高さをテーブルの高さに合わせる
+        const actualHeight = table.offsetHeight;
+        this.hot.rootElement.style.height = actualHeight + 'px';
+        
+        // 親コンテナにも高さを設定
+        const containerElement = this.hot.rootElement.closest('.hot-container');
+        if (containerElement) {
+          containerElement.style.height = actualHeight + 'px';
+        }
       }
+    } catch (error) {
+      console.error('高さ調整中にエラーが発生しました:', error);
     }
   }
 };
