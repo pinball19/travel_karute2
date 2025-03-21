@@ -141,7 +141,7 @@
     const KarteApp = {
       currentId: null,
       hasChanges: false,
-      // 個別の debounce タイマーを用意
+      // 個別の debounce タイマー
       paymentDebounceTimer: null,
       expenseDebounceTimer: null,
       grids: { basic: null, payment: null, expense: null, summary: null },
@@ -242,6 +242,16 @@
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange (immediate):", changes);
               console.log("入金グリッド data (immediate):", this.getData());
+              // 即時更新：もし最終行（A 入金合計行）の入金額（col4）が変更されたなら、
+              // Summary グリッドの旅行総額/A (Row1, Col4) に即座に反映する
+              const lastRowIndex = this.countRows() - 1;
+              changes.forEach(change => {
+                const [row, col, oldValue, newValue] = change;
+                if (row === lastRowIndex && col === 4) {
+                  that.grids.summary.setDataAtCell(1, 4, newValue, 'internal');
+                  console.log("即座に Summary グリッドの旅行総額/A を更新:", newValue);
+                }
+              });
               clearTimeout(that.paymentDebounceTimer);
               that.paymentDebounceTimer = setTimeout(() => {
                 console.log("入金グリッド data (debounced):", this.getData());
@@ -314,6 +324,16 @@
             if (source === 'edit' || source === 'paste') {
               console.log("支払グリッド afterChange (immediate):", changes);
               console.log("支払グリッド data (immediate):", this.getData());
+              // 即時更新：もし最終行（B 支払合計行）の支払金額（col5）が変更されたなら、
+              // Summary グリッドの支払総額/B (Row1, Col5) に即座に反映する
+              const lastRowIndex = this.countRows() - 1;
+              changes.forEach(change => {
+                const [row, col, oldValue, newValue] = change;
+                if (row === lastRowIndex && col === 5) {
+                  that.grids.summary.setDataAtCell(1, 5, newValue, 'internal');
+                  console.log("即座に Summary グリッドの支払総額/B を更新:", newValue);
+                }
+              });
               clearTimeout(that.expenseDebounceTimer);
               that.expenseDebounceTimer = setTimeout(() => {
                 console.log("支払グリッド data (debounced):", this.getData());
