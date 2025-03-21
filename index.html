@@ -242,8 +242,7 @@
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange (immediate):", changes);
               console.log("入金グリッド data (immediate):", this.getData());
-              // 即時更新：もし最終行（A 入金合計行）の入金額（col4）が変更されたなら、
-              // Summary グリッドの旅行総額/A (Row1, Col4) に即座に反映する
+              // 即時更新：最終行（A 入金合計行）の入金額（col4）の変更を検知して Summary グリッドの旅行総額/A (Row1, Col4) に更新
               const lastRowIndex = this.countRows() - 1;
               changes.forEach(change => {
                 const [row, col, oldValue, newValue] = change;
@@ -259,6 +258,10 @@
                 that.markHasChanges();
               }, 100);
             }
+          },
+          afterOnCellEditorDestroy: function() {
+            console.log("入金グリッド: セルエディター終了、強制更新実行");
+            that.calculatePaymentTotal();
           },
           afterCreateRow: function(index, amount, source) {
             try {
@@ -324,8 +327,7 @@
             if (source === 'edit' || source === 'paste') {
               console.log("支払グリッド afterChange (immediate):", changes);
               console.log("支払グリッド data (immediate):", this.getData());
-              // 即時更新：もし最終行（B 支払合計行）の支払金額（col5）が変更されたなら、
-              // Summary グリッドの支払総額/B (Row1, Col5) に即座に反映する
+              // 即時更新：最終行（B 支払合計行）の支払金額（col5）の変更を検知して Summary グリッドの支払総額/B (Row1, Col5) に更新
               const lastRowIndex = this.countRows() - 1;
               changes.forEach(change => {
                 const [row, col, oldValue, newValue] = change;
@@ -341,6 +343,10 @@
                 that.markHasChanges();
               }, 100);
             }
+          },
+          afterOnCellEditorDestroy: function() {
+            console.log("支払グリッド: セルエディター終了、強制更新実行");
+            that.calculateExpenseTotal();
           },
           afterCreateRow: function(index, amount, source) {
             try {
