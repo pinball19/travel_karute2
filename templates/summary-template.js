@@ -33,31 +33,4 @@ const SUMMARY_CELL_TYPES = {
     {row: 1, col: 4}, // 旅行総額
     {row: 1, col: 5}, // 支払総額
     {row: 1, col: 6}, // 人数
-    {row: 1, col: 7}  // 特補人数
-  ],
-  
-  // パーセンテージセル
-  percentageCells: [
-    {row: 1, col: 1} // 利益率
-  ],
-  
-  // 日付入力セル
-  dateCells: [
-    {row: 1, col: 0} // 報告日
-  ]
-};
-
-/**
- * 収支情報と計算フィールドのマッピング
- */
-const SUMMARY_MAPPING = {
-  // 計算結果表示セル
-  reportDate: {row: 1, col: 0},   // 報告日
-  profitRate: {row: 1, col: 1},    // 利益率
-  profitAmount: {row: 1, col: 2},  // 利益額
-  profitPerPerson: {row: 1, col: 3}, // 一人粗利
-  totalAmount: {row: 1, col: 4},   // 旅行総額/A
-  totalExpense: {row: 1, col: 5},  // 支払総額/B
-  personCount: {row: 1, col: 6},   // 人数
-  specialCount: {row: 1, col: 7}   // 特補人数
-};
+    {row: 1, col: 7}  //
