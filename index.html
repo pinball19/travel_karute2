@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>カルテシステム - 団体ナビ成約カルテ</title>
+  <!-- スタイルシート -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/13.1.0/handsontable.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 全体コンテナ -->
+  <div class="excel-app">
+    <!-- ヘッダー部分 (Excelタイトルバー) -->
+    <div class="excel-header">
+      <div class="app-title">カルテシステム - [団体ナビ成約カルテ.xlsx]</div>
+      <div class="info">
+        <span id="current-karte-id">新規カルテ</span>
+        <div id="current-editors" class="current-editors-container"></div>
+      </div>
+    </div>
+    
+    <!-- リボン (Excel上部ツールバー) -->
+    <div class="excel-ribbon">
+      <button class="ribbon-button" id="save-button">
+        <i class="fas fa-save"></i>
+        保存
+      </button>
+      <button class="ribbon-button" id="new-button">
+        <i class="fas fa-file"></i>
+        新規
+      </button>
+      <div class="ribbon-divider"></div>
+      <button class="ribbon-button" id="open-button">
+        <i class="fas fa-folder-open"></i>
+        開く
+      </button>
+      <button class="ribbon-button" id="export-button">
+        <i class="fas fa-file-export"></i>
+        出力
+      </button>
+    </div>
+    
+    <!-- メインコンテンツエリア -->
+    <div class="spreadsheet-container">
+      <!-- セクションごとのコンテナ -->
+      <div class="section-container">
+        <div class="section-header">◆ 基本情報</div>
+        <div id="basic-container" class="hot-container"></div>
+      </div>
+      
+      <div class="section-container">
+        <div class="section-header">◆ 入金情報</div>
+        <div id="payment-container" class="hot-container"></div>
+      </div>
+      
+      <div class="section-container">
+        <div class="section-header">◆ 支払情報</div>
+        <div id="expense-container" class="hot-container"></div>
+      </div>
+      
+      <div class="section-container">
+        <div class="section-header">◆ 収支情報</div>
+        <div id="summary-container" class="hot-container"></div>
+      </div>
+    </div>
+    
+    <!-- ステータスバー -->
+    <div class="status-bar">
+      <div>カルテシステム</div>
+      <div>最終更新: <span id="last-saved">保存されていません</span></div>
+      <div>接続状態: <span id="connection-status">オンライン</span></div>
+    </div>
+  </div>
+  
+  <!-- カルテ一覧モーダル -->
+  <div id="karte-list-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>カルテ一覧</h2>
+      
+      <!-- 検索フィルター -->
+      <div class="modal-filter">
+        <input type="text" id="karte-search" placeholder="検索" autocomplete="off">
+        <button id="clear-search"><i class="fas fa-times"></i> クリア</button>
+      </div>
+      
+      <div class="modal-table-container">
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th>カルテNo</th>
+              <th>担当者</th>
+              <th>名前</th>
+              <th>団体名</th>
+              <th>宿泊日</th>
+              <th>行先</th>
+              <th>人数</th>
+              <th>編集者</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="karte-list-body">
+            <!-- カルテ一覧はJavaScriptで動的に生成 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 保存中インジケーター -->
+  <div id="saving-indicator" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #333; color: white; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+    <i class="fas fa-spinner fa-spin"></i> 保存中...
+  </div>
+  
+  <!-- スクリプト -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/13.1.0/handsontable.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-firestore-compat.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- アプリケーションのJavaScript -->
+  <script src="js/config.js"></script>
+  <script src="templates/basic-template.js"></script>
+  <script src="templates/payment-template.js"></script>
+  <script src="templates/expense-template.js"></script>
+  <script src="templates/summary-template.js"></script>
+  <script src="js/data-manager.js"></script>
+  <script src="js/basic-info.js"></script>
+  <script src="js/payment-info.js"></script>
+  <script src="js/expense-info.js"></script>
+  <script src="js/summary-info.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
