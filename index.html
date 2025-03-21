@@ -345,7 +345,12 @@
         this.setupEventListeners();
         // 初回表示時にカルテ一覧を表示する
         this.loadKarteList();
-        document.getElementById('list-modal').style.display = 'block';
+        // スマホの場合のみモーダルを自動表示、PCの場合は非表示
+        if (/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          document.getElementById('list-modal').style.display = 'block';
+        } else {
+          document.getElementById('list-modal').style.display = 'none';
+        }
         setTimeout(() => { this.adjustTableHeights(); }, 500);
         console.log("KarteApp.init() end");
       },
