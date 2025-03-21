@@ -141,8 +141,9 @@
     const KarteApp = {
       currentId: null,
       hasChanges: false,
-      // debounceTimer を追加
-      debounceTimer: null,
+      // 個別の debounce タイマーを用意
+      paymentDebounceTimer: null,
+      expenseDebounceTimer: null,
       grids: { basic: null, payment: null, expense: null, summary: null },
       templates: {
         basic: [
@@ -241,9 +242,8 @@
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange (immediate):", changes);
               console.log("入金グリッド data (immediate):", this.getData());
-              // debounce を適用：連続変更時は最後の1回だけ実行（100ms 待機）
-              clearTimeout(that.debounceTimer);
-              that.debounceTimer = setTimeout(() => {
+              clearTimeout(that.paymentDebounceTimer);
+              that.paymentDebounceTimer = setTimeout(() => {
                 console.log("入金グリッド data (debounced):", this.getData());
                 that.calculatePaymentTotal();
                 that.markHasChanges();
@@ -314,8 +314,8 @@
             if (source === 'edit' || source === 'paste') {
               console.log("支払グリッド afterChange (immediate):", changes);
               console.log("支払グリッド data (immediate):", this.getData());
-              clearTimeout(that.debounceTimer);
-              that.debounceTimer = setTimeout(() => {
+              clearTimeout(that.expenseDebounceTimer);
+              that.expenseDebounceTimer = setTimeout(() => {
                 console.log("支払グリッド data (debounced):", this.getData());
                 that.calculateExpenseTotal();
                 that.markHasChanges();
