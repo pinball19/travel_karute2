@@ -53,7 +53,8 @@
     <header>
       <div class="app-title"><h1>団体ナビ成約カルテ</h1></div>
       <div class="app-info">
-        <div>カルテID: <span id="current-karte-id">新規カルテ</span></div>
+        <!-- 表示は「カルテNo」に統一 -->
+        <div>カルテNo: <span id="current-karte-id">新規カルテ</span></div>
         <div>最終更新: <span id="last-saved">-</span></div>
       </div>
     </header>
@@ -107,9 +108,7 @@
             <th>操作</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- JSで行を追加 -->
-        </tbody>
+        <tbody><!-- JSで行を追加 --></tbody>
       </table>
     </div>
   </div>
@@ -165,6 +164,10 @@
           ['B 支払合計', '', '', '', '', 0, '', '']
         ],
         summary: [
+          // 以下のレイアウトに沿って、各値をセットします
+          // 行0: ['報告日', '', '利益率', '', '利益額', '']
+          // 行1: ['一人粗利', '', '旅行総額/A', '', '支払総額/B', '']
+          // 行2: ['人数', '', '特補人数', '', '', '']
           ['報告日', '', '利益率', '', '利益額', ''],
           ['一人粗利', '', '旅行総額/A', '', '支払総額/B', ''],
           ['人数', '', '特補人数', '', '', '']
@@ -200,13 +203,9 @@
               const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
               this.rootElement.style.height = tableHeight + 'px';
               console.log("基本グリッド afterRender: tableHeight=", tableHeight);
-            } catch (e) {
-              console.warn('基本グリッド 高さ調整エラー:', e);
-            }
+            } catch (e) { console.warn('基本グリッド 高さ調整エラー:', e); }
           },
-          afterChange: (changes, source) => {
-            if (source === 'edit' || source === 'paste') { that.markHasChanges(); }
-          }
+          afterChange: (changes, source) => { if (source === 'edit' || source === 'paste') { that.markHasChanges(); } }
         });
         
         // 入金情報グリッド
@@ -366,7 +365,7 @@
                 cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
               }
               const readOnlyCells = [[0,3], [0,5], [1,1], [1,3], [1,5]];
-              if (readOnlyCells.some(([r, c]) => r === row && c === col)) { cellProperties.readOnly = true; }
+              if (readOnlyCells.some(([r,c]) => r === row && c === col)) { cellProperties.readOnly = true; }
             }
             return cellProperties;
           },
@@ -495,6 +494,7 @@
       createNew: function() {
         console.log("createNew() called");
         this.currentId = null;
+        // 表示は「カルテNo」に統一
         document.getElementById('current-karte-id').textContent = '新規カルテ';
         document.getElementById('last-saved').textContent = '-';
         this.grids.basic.loadData(this.deepCopy(this.templates.basic));
@@ -521,8 +521,10 @@
           for (let i = 1; i < lastRowIndex; i++) { total += this.parseNumber(data[i][4]); }
           console.log("calculatePaymentTotal: total =", total);
           this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
+          // ※ここでは「A 入金合計」が更新されるので、後で summary で使用
           if (this.grids.summary) {
-            this.grids.summary.setDataAtCell(1, 3, total, 'internal');
+            // summary の旅行総額/Aを更新（行1, 列2）
+            this.grids.summary.setDataAtCell(1, 2, total, 'internal');
             this.calculateProfit();
           }
         } catch (error) { console.error('入金合計計算エラー:', error); }
@@ -537,8 +539,9 @@
           for (let i = 1; i < lastRowIndex; i++) { total += this.parseNumber(data[i][5]); }
           console.log("calculateExpenseTotal: total =", total);
           this.grids.expense.setDataAtCell(lastRowIndex, 5, total, 'internal');
+          // summary の支払総額/B を更新（行1, 列4）
           if (this.grids.summary) {
-            this.grids.summary.setDataAtCell(1, 5, total, 'internal');
+            this.grids.summary.setDataAtCell(1, 4, total, 'internal');
             this.calculateProfit();
           }
         } catch (error) { console.error('支払合計計算エラー:', error); }
@@ -547,22 +550,34 @@
       calculateProfit: function() {
         if (!this.grids.summary) return;
         try {
-          const data = this.grids.summary.getData();
-          const income = this.parseNumber(data[1][3]);
-          const expense = this.parseNumber(data[1][5]);
-          const profit = income - expense;
-          console.log("calculateProfit: income =", income, " expense =", expense, " profit =", profit);
-          this.grids.summary.setDataAtCell(0, 5, profit, 'internal');
+          // 旅行総額/A を入金グリッドの合計値（最終行、列4）から取得
+          const paymentData = this.grids.payment.getData();
+          const travelTotal = this.parseNumber(paymentData[paymentData.length - 1][4]);
+          // 支払総額/B を支払グリッドの合計値（最終行、列5）から取得
+          const expenseData = this.grids.expense.getData();
+          const expenseTotal = this.parseNumber(expenseData[expenseData.length - 1][5]);
+          const profit = travelTotal - expenseTotal;
+          console.log("calculateProfit: travelTotal=", travelTotal, " expenseTotal=", expenseTotal, " profit=", profit);
+          // 利益率 = profit / travelTotal × 100 (%)
+          const profitRate = travelTotal > 0 ? (profit / travelTotal * 100).toFixed(1) + '%' : '0%';
+          // 人数は基本情報グリッドの行2, 列5
           const basicData = this.grids.basic.getData();
           let personCount = 0;
-          if (basicData && basicData[2] && basicData[2].length > 5) { personCount = this.parseNumber(basicData[2][5]); }
-          this.grids.summary.setDataAtCell(2, 1, personCount, 'internal');
-          let profitRate = 0;
-          if (income > 0) { profitRate = ((profit / income) * 100).toFixed(1) + '%'; }
-          this.grids.summary.setDataAtCell(0, 3, profitRate, 'internal');
-          let profitPerPerson = 0;
-          if (personCount > 0) { profitPerPerson = Math.round(profit / personCount); }
-          this.grids.summary.setDataAtCell(1, 1, profitPerPerson, 'internal');
+          if (basicData && basicData.length >= 3 && basicData[2].length >= 6) {
+            personCount = this.parseNumber(basicData[2][5]);
+          }
+          const profitPerPerson = personCount > 0 ? Math.round(profit / personCount) : 0;
+          // 更新先（summary グリッド）：
+          // 行0: [報告日, '', 利益率, '', 利益額, '']
+          // 行1: [一人粗利, '', 旅行総額/A, '', 支払総額/B, '']
+          // 行2: [人数, '', 特補人数, '', '', '']
+          this.grids.summary.setDataAtCell(0, 2, profitRate, 'internal'); // 利益率
+          this.grids.summary.setDataAtCell(0, 4, profit, 'internal');     // 利益額
+          this.grids.summary.setDataAtCell(1, 1, profitPerPerson, 'internal'); // 一人粗利
+          // 旅行総額/A と 支払総額/B は既にセットする (calculatePaymentTotal, calculateExpenseTotal)
+          // 人数はここで更新（行2, 列0）
+          this.grids.summary.setDataAtCell(2, 0, personCount, 'internal');
+          console.log("calculateProfit: profitRate=", profitRate, " profitPerPerson=", profitPerPerson, " personCount=", personCount);
         } catch (error) { console.error('利益計算エラー:', error); }
       },
       
@@ -574,16 +589,15 @@
         }
         document.getElementById('last-saved').textContent = '保存中...';
         try {
-          // グリッドから取得した 2D 配列を整形
+          // 各グリッドのデータを2D配列として取得・整形
           const basicGridData = this.grids.basic ? this.prepareDataForFirebase(this.grids.basic.getData()) : [];
           const paymentGridData = this.grids.payment ? this.prepareDataForFirebase(this.grids.payment.getData()) : [];
           const expenseGridData = this.grids.expense ? this.prepareDataForFirebase(this.grids.expense.getData()) : [];
           const summaryGridData = this.grids.summary ? this.prepareDataForFirebase(this.grids.summary.getData()) : [];
-          
           console.log("saveKarte: basicGridData=", basicGridData);
-          // 抽出用に使用（2D 配列のまま）
+          // カルテ情報は基本情報から抽出（カルテNoなど）
           const karteInfo = this.extractKarteInfo(basicGridData);
-          // Firestore には文字列として保存（ネストした配列エラー回避）
+          // Firestore へは 2D配列を JSON 文字列として保存する（ネストした配列エラー回避）
           const karteData = {
             basicData: JSON.stringify(basicGridData),
             paymentData: JSON.stringify(paymentGridData),
@@ -605,7 +619,8 @@
           savePromise.then(() => {
             const now = new Date();
             document.getElementById('last-saved').textContent = now.toLocaleString();
-            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
+            // 表示はカルテNoに統一。空の場合は「新規カルテ」
+            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || '新規カルテ';
             this.hasChanges = false;
             this.showNotification('カルテを保存しました', 'success');
             console.log("saveKarte: save succeeded");
@@ -733,7 +748,8 @@
             if (data.summaryData) this.grids.summary.loadData(JSON.parse(data.summaryData));
             this.currentId = id;
             const karteInfo = data.karteInfo || {};
-            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || id;
+            // 表示はカルテNoのみ
+            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || '新規カルテ';
             document.getElementById('last-saved').textContent = data.lastUpdated ? data.lastUpdated.toDate().toLocaleString() : '-';
             this.hasChanges = false;
             setTimeout(() => { this.adjustTableHeights(); }, 100);
@@ -765,7 +781,7 @@
         console.log("exportToExcel() called");
         try {
           const wb = XLSX.utils.book_new();
-          const basicWs   = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
+          const basicWs = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
           const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
           const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
           const summaryWs = XLSX.utils.aoa_to_sheet(this.grids.summary.getData());
@@ -829,6 +845,39 @@
         return isNaN(number) ? 0 : number;
       },
       deepCopy: function(obj) { return JSON.parse(JSON.stringify(obj)); },
+      
+      // 収支情報計算（修正内容）
+      calculateProfit: function() {
+        if (!this.grids.summary) return;
+        try {
+          // 旅行総額/Aは入金グリッド最終行の列4、支払総額/Bは支払グリッド最終行の列5から取得
+          const paymentData = this.grids.payment.getData();
+          const expenseData = this.grids.expense.getData();
+          const travelTotal = this.parseNumber(paymentData[paymentData.length - 1][4]);
+          const expenseTotal = this.parseNumber(expenseData[expenseData.length - 1][5]);
+          const profit = travelTotal - expenseTotal;
+          // 人数は基本情報グリッドの行2の列5
+          const basicData = this.grids.basic.getData();
+          let personCount = 0;
+          if (basicData && basicData.length >= 3 && basicData[2].length >= 6) {
+            personCount = this.parseNumber(basicData[2][5]);
+          }
+          const profitPerPerson = personCount > 0 ? Math.round(profit / personCount) : 0;
+          const profitRate = travelTotal > 0 ? (profit / travelTotal * 100).toFixed(1) + '%' : '0%';
+          // 更新先（summaryグリッド）：
+          // 行0: [報告日, '', 利益率, '', 利益額, '']
+          // 行1: [一人粗利, '', 旅行総額/A, '', 支払総額/B, '']
+          // 行2: [人数, '', 特補人数, '', '', '']
+          this.grids.summary.setDataAtCell(0, 2, profitRate, 'internal');   // 利益率
+          this.grids.summary.setDataAtCell(0, 4, profit, 'internal');         // 利益額
+          this.grids.summary.setDataAtCell(1, 1, profitPerPerson, 'internal');  // 一人粗利
+          this.grids.summary.setDataAtCell(1, 2, travelTotal, 'internal');      // 旅行総額/A
+          this.grids.summary.setDataAtCell(1, 4, expenseTotal, 'internal');     // 支払総額/B
+          this.grids.summary.setDataAtCell(2, 0, personCount, 'internal');      // 人数
+          console.log("calculateProfit: travelTotal=", travelTotal, " expenseTotal=", expenseTotal, " profit=", profit, " profitRate=", profitRate, " personCount=", personCount, " profitPerPerson=", profitPerPerson);
+        } catch (error) { console.error('利益計算エラー:', error); }
+      },
+      
       adjustTableHeights: function() {
         ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
           const grid = this.grids[gridName];
