@@ -11,7 +11,6 @@ const firebaseConfig = {
   appId: "1:635350270309:web:2498d21f9f134defeda18c",
   measurementId: "G-REHJZHXSR9"
 };
-
 // Firebaseの初期化
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -41,7 +40,8 @@ const APP_CONFIG = {
     licenseKey: 'non-commercial-and-evaluation',
     stretchH: 'all',           // カラムを幅いっぱいに伸ばす
     autoColumnSize: false,     // パフォーマンス向上のため無効化
-    autoRowSize: false,        // パフォーマンス向上のため無効化
+    autoRowSize: true,         // 行の高さを自動調整
+    renderAllRows: true,       // すべての行をレンダリング
     outsideClickDeselects: false, // 外部クリックによる選択解除を防止
     comments: true,            // セルコメントを有効化
     wordWrap: true,            // セル内テキストの折り返し
@@ -49,6 +49,9 @@ const APP_CONFIG = {
     trimWhitespace: true,      // 空白を自動削除
     enterBeginsEditing: true,  // Enterでセル編集開始
     fillHandle: true,          // フィルハンドルによるドラッグを有効化
+    height: 'auto',            // 高さを自動調整
+    // スクロールバーの無効化
+    overflow: 'visible'        // スクロールバーを表示しない
     // カスタムレンダラーは各コンポーネントで設定
   }
 };
