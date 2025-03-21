@@ -66,20 +66,20 @@ body {
   margin: 0 5px;
 }
 
-/* スプレッドシートコンテナ */
+/* スプレッドシートコンテナ - スクロールバーを削除して全体表示用に変更 */
 .spreadsheet-container {
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: auto;  /* ページ全体のスクロールのみ使用 */
   overflow-x: hidden;
   padding: 0 15px;
 }
 
-/* セクションコンテナ */
+/* セクションコンテナ - 高さ制限の削除 */
 .section-container {
   margin: 15px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
-  overflow: hidden;
+  overflow: visible;  /* overflow: hidden から変更 */
   background-color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -92,12 +92,37 @@ body {
   font-size: 14px;
 }
 
+/* テーブルコンテナ - スクロールバー削除 */
 .hot-container {
   height: auto;
-  min-height: 100px;
-  max-height: 400px;
-  overflow: hidden;
+  min-height: auto;  /* min-height を auto に変更 */
+  max-height: none;  /* max-height を削除 */
+  overflow: visible; /* overflow: hidden から変更 */
   position: relative;
+}
+
+/* Handsontable のスクロールバーを削除 */
+.handsontable .wtHolder {
+  overflow: visible !important;
+}
+
+.handsontable .wtHider {
+  overflow: visible !important;
+}
+
+/* Handsontableの内部スクロールを無効化 */
+.handsontable .ht_master .wtHolder {
+  overflow: visible !important;
+}
+
+/* Handsontable自体の高さを自動調整 */
+.handsontable {
+  height: auto !important;
+}
+
+/* テーブルの高さを内容に合わせる */
+.handsontable table {
+  height: auto !important;
 }
 
 /* ステータスバー */
@@ -302,10 +327,6 @@ body {
   
   .section-container {
     margin: 10px 0;
-  }
-  
-  .hot-container {
-    max-height: 300px;
   }
   
   .modal-content {
