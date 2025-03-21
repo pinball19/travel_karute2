@@ -2,135 +2,1078 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>カルテシステム - 団体ナビ成約カルテ</title>
-  <!-- スタイルシート -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/13.1.0/handsontable.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シンプルカルテシステム</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 5px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .app-title h1 {
+      margin: 0;
+      color: #217346; /* Excel風の緑色 */
+    }
+    
+    .app-info {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: #217346;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #1a5e38;
+    }
+    
+    section {
+      margin-bottom: 30px;
+    }
+    
+    section h2 {
+      background-color: #4472C4;
+      color: white;
+      padding: 8px 12px;
+      margin: 0 0 10px 0;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+    
+    .grid-container {
+      height: auto;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    
+    footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    /* モーダル */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      position: relative;
+      background-color: white;
+      margin: 50px auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    /* カルテリスト */
+    .search-container {
+      margin-bottom: 15px;
+    }
+    
+    #search {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    table th,
+    table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    
+    table th {
+      background-color: #f3f2f1;
+    }
+    
+    table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 9999;
+      display: none;
+    }
+    
+    /* セクションのスタイル調整 */
+    .section-container {
+      margin-bottom: 25px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    .section-header {
+      background-color: #4472C4;
+      color: white;
+      padding: 8px 15px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    /* 各セクション別の色 */
+    .basic-section .section-header {
+      background-color: #4472C4; /* 青 */
+    }
+    
+    .payment-section .section-header {
+      background-color: #70AD47; /* 緑 */
+    }
+    
+    .expense-section .section-header {
+      background-color: #ED7D31; /* オレンジ */
+    }
+    
+    .summary-section .section-header {
+      background-color: #7030A0; /* 紫 */
+    }
+    
+    /* 行追加ボタン */
+    .add-row-btn {
+      margin-top: 5px;
+      padding: 4px 8px;
+      font-size: 12px;
+      float: right;
+    }
+  </style>
 </head>
 <body>
-  <!-- 全体コンテナ -->
-  <div class="excel-app">
-    <!-- ヘッダー部分 (Excelタイトルバー) -->
-    <div class="excel-header">
-      <div class="app-title">カルテシステム - [団体ナビ成約カルテ.xlsx]</div>
-      <div class="info">
-        <span id="current-karte-id">新規カルテ</span>
-        <div id="current-editors" class="current-editors-container"></div>
+  <div class="app-container">
+    <header>
+      <div class="app-title">
+        <h1>シンプルカルテシステム</h1>
       </div>
+      <div class="app-info">
+        <div>カルテID: <span id="current-karte-id">新規カルテ</span></div>
+        <div>最終更新: <span id="last-saved">-</span></div>
+      </div>
+    </header>
+
+    <div class="action-buttons">
+      <button id="save-btn">保存</button>
+      <button id="new-btn">新規</button>
+      <button id="open-btn">開く</button>
+      <button id="export-btn">エクスポート</button>
     </div>
-    
-    <!-- リボン (Excel上部ツールバー) -->
-    <div class="excel-ribbon">
-      <button class="ribbon-button" id="save-button">
-        <i class="fas fa-save"></i>
-        保存
-      </button>
-      <button class="ribbon-button" id="new-button">
-        <i class="fas fa-file"></i>
-        新規
-      </button>
-      <div class="ribbon-divider"></div>
-      <button class="ribbon-button" id="open-button">
-        <i class="fas fa-folder-open"></i>
-        開く
-      </button>
-      <button class="ribbon-button" id="export-button">
-        <i class="fas fa-file-export"></i>
-        出力
-      </button>
-    </div>
-    
-    <!-- メインコンテンツエリア -->
-    <div class="spreadsheet-container">
-      <!-- セクションごとのコンテナ -->
-      <div class="section-container">
+
+    <main>
+      <!-- すべてのセクションを縦に並べて表示 -->
+      <div class="section-container basic-section">
         <div class="section-header">◆ 基本情報</div>
-        <div id="basic-container" class="hot-container"></div>
+        <div id="basic-grid" class="grid-container"></div>
       </div>
       
-      <div class="section-container">
+      <div class="section-container payment-section">
         <div class="section-header">◆ 入金情報</div>
-        <div id="payment-container" class="hot-container"></div>
+        <div id="payment-grid" class="grid-container"></div>
+        <button id="add-payment-row" class="add-row-btn">行を追加</button>
       </div>
       
-      <div class="section-container">
+      <div class="section-container expense-section">
         <div class="section-header">◆ 支払情報</div>
-        <div id="expense-container" class="hot-container"></div>
+        <div id="expense-grid" class="grid-container"></div>
+        <button id="add-expense-row" class="add-row-btn">行を追加</button>
       </div>
       
-      <div class="section-container">
+      <div class="section-container summary-section">
         <div class="section-header">◆ 収支情報</div>
-        <div id="summary-container" class="hot-container"></div>
+        <div id="summary-grid" class="grid-container"></div>
       </div>
-    </div>
-    
-    <!-- ステータスバー -->
-    <div class="status-bar">
-      <div>カルテシステム</div>
-      <div>最終更新: <span id="last-saved">保存されていません</span></div>
+    </main>
+
+    <footer>
+      <div>シンプルカルテシステム v1.0</div>
       <div>接続状態: <span id="connection-status">オンライン</span></div>
-    </div>
+    </footer>
   </div>
-  
+
   <!-- カルテ一覧モーダル -->
-  <div id="karte-list-modal" class="modal">
+  <div id="list-modal" class="modal">
     <div class="modal-content">
-      <span class="close-modal">&times;</span>
+      <span class="close">&times;</span>
       <h2>カルテ一覧</h2>
       
-      <!-- 検索フィルター -->
-      <div class="modal-filter">
-        <input type="text" id="karte-search" placeholder="検索" autocomplete="off">
-        <button id="clear-search"><i class="fas fa-times"></i> クリア</button>
+      <div class="search-container">
+        <input type="text" id="search" placeholder="検索...">
       </div>
       
-      <div class="modal-table-container">
-        <table class="modal-table">
-          <thead>
-            <tr>
-              <th>カルテNo</th>
-              <th>担当者</th>
-              <th>名前</th>
-              <th>団体名</th>
-              <th>宿泊日</th>
-              <th>行先</th>
-              <th>人数</th>
-              <th>編集者</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody id="karte-list-body">
-            <!-- カルテ一覧はJavaScriptで動的に生成 -->
-          </tbody>
-        </table>
-      </div>
+      <table id="karte-list">
+        <thead>
+          <tr>
+            <th>カルテNo</th>
+            <th>担当者</th>
+            <th>団体名</th>
+            <th>人数</th>
+            <th>行先</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- データはJSで追加 -->
+        </tbody>
+      </table>
     </div>
   </div>
   
-  <!-- 保存中インジケーター -->
-  <div id="saving-indicator" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #333; color: white; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-    <i class="fas fa-spinner fa-spin"></i> 保存中...
-  </div>
-  
+  <!-- 通知 -->
+  <div id="notification" class="notification"></div>
+
   <!-- スクリプト -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/13.1.0/handsontable.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-firestore-compat.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   
-  <!-- アプリケーションのJavaScript -->
-  <script src="js/config.js"></script>
-  <script src="templates/basic-template.js"></script>
-  <script src="templates/payment-template.js"></script>
-  <script src="templates/expense-template.js"></script>
-  <script src="templates/summary-template.js"></script>
-  <script src="js/data-manager.js"></script>
-  <script src="js/basic-info.js"></script>
-  <script src="js/payment-info.js"></script>
-  <script src="js/expense-info.js"></script>
-  <script src="js/summary-info.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+    // Firebase設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJmvoumJa1zcNBMNcJt4LP2Zjd2LbzEG0",
+      authDomain: "travelkarute.firebaseapp.com",
+      projectId: "travelkarute",
+      storageBucket: "travelkarute.firebasestorage.app",
+      messagingSenderId: "635350270309",
+      appId: "1:635350270309:web:2498d21f9f134defeda18c"
+    };
+    
+    // Firebase初期化
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    // カルテアプリケーション
+    const KarteApp = {
+      // 現在のカルテID
+      currentId: null,
+      
+      // データに変更があるかのフラグ
+      hasChanges: false,
+      
+      // 各グリッドインスタンス
+      grids: {
+        basic: null,
+        payment: null,
+        expense: null,
+        summary: null
+      },
+      
+      // 各テンプレート
+      templates: {
+        // 基本情報テンプレート
+        basic: [
+          ['カルテNo', '', '担当者', '', '日付', ''],
+          ['団体名', '', '人数', '', '行先', '']
+        ],
+        
+        // 入金情報テンプレート（行追加可能）
+        payment: [
+          ['日付', '項目', '入金額', '備考'],
+          ['', '', '', ''],
+          ['', '', '', ''],
+          ['合計', '', 0, '']
+        ],
+        
+        // 支払情報テンプレート（行追加可能）
+        expense: [
+          ['日付', '項目', '支払額', '備考'],
+          ['', '', '', ''],
+          ['', '', '', ''],
+          ['合計', '', 0, '']
+        ],
+        
+        // 収支情報テンプレート
+        summary: [
+          ['入金合計', '', '支払合計', '', '利益', ''],
+          ['', 0, '', 0, '', 0]
+        ]
+      },
+      
+      // 初期化
+      init: function() {
+        // 各グリッドを初期化
+        this.initGrids();
+        
+        // イベントリスナーを設定
+        this.setupEventListeners();
+        
+        // 新規カルテを作成
+        this.createNew();
+      },
+      
+      // 各グリッドを初期化
+      initGrids: function() {
+        // 基本情報グリッド
+        this.grids.basic = new Handsontable(document.getElementById('basic-grid'), {
+          data: this.deepCopy(this.templates.basic),
+          rowHeaders: false,
+          colHeaders: false,
+          height: 'auto',
+          stretchH: 'all',
+          minRows: 2,
+          minCols: 6,
+          licenseKey: 'non-commercial-and-evaluation',
+          afterChange: (changes, source) => {
+            if (source === 'edit' || source === 'paste') {
+              this.markHasChanges();
+            }
+          }
+        });
+        
+        // 入金情報グリッド（行追加可能）
+        this.grids.payment = new Handsontable(document.getElementById('payment-grid'), {
+          data: this.deepCopy(this.templates.payment),
+          rowHeaders: true,
+          colHeaders: false,
+          height: 'auto',
+          stretchH: 'all',
+          minRows: 4,
+          minCols: 4,
+          contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
+          licenseKey: 'non-commercial-and-evaluation',
+          cells: (row, col) => {
+            const cellProperties = {};
+            // 入金額列は数値型
+            if (col === 2 && row > 0) {
+              cellProperties.type = 'numeric';
+              cellProperties.numericFormat = {
+                pattern: '0,0',
+                culture: 'ja-JP'
+              };
+            }
+            // 合計行は読み取り専用
+            if (row === this.getRowCount('payment') - 1) {
+              cellProperties.readOnly = true;
+              if (col === 0) {
+                cellProperties.className = 'total-cell';
+              }
+            }
+            return cellProperties;
+          },
+          // データ変更時の処理
+          afterChange: (changes, source) => {
+            if (source === 'edit' || source === 'paste') {
+              this.calculatePaymentTotal();
+              this.markHasChanges();
+            }
+          },
+          // 行追加・削除時の処理
+          afterCreateRow: (index, amount, source) => {
+            // 合計行が常に最後になるように調整
+            const rowCount = this.grids.payment.countRows();
+            const data = this.grids.payment.getData();
+            
+            // 合計行が最後の行でない場合は移動
+            if (!data[rowCount-1][0] || data[rowCount-1][0] !== '合計') {
+              // 合計行を探す
+              for (let i = 0; i < rowCount; i++) {
+                if (data[i][0] === '合計') {
+                  // 合計行を削除して最後に追加
+                  const totalRow = data[i].slice();
+                  this.grids.payment.alter('remove_row', i, 1);
+                  this.grids.payment.alter('insert_row', rowCount-1, 1);
+                  this.grids.payment.setDataAtRow(rowCount-1, totalRow);
+                  break;
+                }
+              }
+            }
+            
+            this.calculatePaymentTotal();
+            this.markHasChanges();
+          },
+          afterRemoveRow: (index, amount) => {
+            this.calculatePaymentTotal();
+            this.markHasChanges();
+          }
+        });
+        
+        // 支払情報グリッド（行追加可能）
+        this.grids.expense = new Handsontable(document.getElementById('expense-grid'), {
+          data: this.deepCopy(this.templates.expense),
+          rowHeaders: true,
+          colHeaders: false,
+          height: 'auto',
+          stretchH: 'all',
+          minRows: 4,
+          minCols: 4,
+          contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
+          licenseKey: 'non-commercial-and-evaluation',
+          cells: (row, col) => {
+            const cellProperties = {};
+            // 支払額列は数値型
+            if (col === 2 && row > 0) {
+              cellProperties.type = 'numeric';
+              cellProperties.numericFormat = {
+                pattern: '0,0',
+                culture: 'ja-JP'
+              };
+            }
+            // 合計行は読み取り専用
+            if (row === this.getRowCount('expense') - 1) {
+              cellProperties.readOnly = true;
+              if (col === 0) {
+                cellProperties.className = 'total-cell';
+              }
+            }
+            return cellProperties;
+          },
+          // データ変更時の処理
+          afterChange: (changes, source) => {
+            if (source === 'edit' || source === 'paste') {
+              this.calculateExpenseTotal();
+              this.markHasChanges();
+            }
+          },
+          // 行追加・削除時の処理
+          afterCreateRow: (index, amount, source) => {
+            // 合計行が常に最後になるように調整
+            const rowCount = this.grids.expense.countRows();
+            const data = this.grids.expense.getData();
+            
+            // 合計行が最後の行でない場合は移動
+            if (!data[rowCount-1][0] || data[rowCount-1][0] !== '合計') {
+              // 合計行を探す
+              for (let i = 0; i < rowCount; i++) {
+                if (data[i][0] === '合計') {
+                  // 合計行を削除して最後に追加
+                  const totalRow = data[i].slice();
+                  this.grids.expense.alter('remove_row', i, 1);
+                  this.grids.expense.alter('insert_row', rowCount-1, 1);
+                  this.grids.expense.setDataAtRow(rowCount-1, totalRow);
+                  break;
+                }
+              }
+            }
+            
+            this.calculateExpenseTotal();
+            this.markHasChanges();
+          },
+          afterRemoveRow: (index, amount) => {
+            this.calculateExpenseTotal();
+            this.markHasChanges();
+          }
+        });
+        
+        // 収支情報グリッド
+        this.grids.summary = new Handsontable(document.getElementById('summary-grid'), {
+          data: this.deepCopy(this.templates.summary),
+          rowHeaders: false,
+          colHeaders: false,
+          height: 'auto',
+          stretchH: 'all',
+          minRows: 2,
+          minCols: 6,
+          licenseKey: 'non-commercial-and-evaluation',
+          cells: (row, col) => {
+            const cellProperties = {};
+            // 数値セルは読み取り専用
+            if (row === 1 && (col === 1 || col === 3 || col === 5)) {
+              cellProperties.readOnly = true;
+              cellProperties.type = 'numeric';
+              cellProperties.numericFormat = {
+                pattern: '0,0',
+                culture: 'ja-JP'
+              };
+            }
+            return cellProperties;
+          }
+        });
+      },
+      
+      // イベントリスナーの設定
+      setupEventListeners: function() {
+        // 保存ボタン
+        document.getElementById('save-btn').addEventListener('click', () => {
+          this.saveKarte();
+        });
+        
+        // 新規ボタン
+        document.getElementById('new-btn').addEventListener('click', () => {
+          // 変更があれば確認
+          if (this.hasChanges) {
+            if (!confirm('保存されていない変更があります。新規カルテを作成しますか？')) {
+              return;
+            }
+          }
+          this.createNew();
+        });
+        
+        // 開くボタン
+        document.getElementById('open-btn').addEventListener('click', () => {
+          this.loadKarteList();
+        });
+        
+        // エクスポートボタン
+        document.getElementById('export-btn').addEventListener('click', () => {
+          this.exportToExcel();
+        });
+        
+        // 入金情報に行を追加するボタン
+        document.getElementById('add-payment-row').addEventListener('click', () => {
+          const rowCount = this.grids.payment.countRows();
+          // 合計行の1つ上に行を追加
+          this.grids.payment.alter('insert_row', rowCount - 1, 1);
+        });
+        
+        // 支払情報に行を追加するボタン
+        document.getElementById('add-expense-row').addEventListener('click', () => {
+          const rowCount = this.grids.expense.countRows();
+          // 合計行の1つ上に行を追加
+          this.grids.expense.alter('insert_row', rowCount - 1, 1);
+        });
+        
+        // モーダル関連
+        document.querySelector('.close').addEventListener('click', () => {
+          document.getElementById('list-modal').style.display = 'none';
+        });
+        
+        // 検索フィールド
+        document.getElementById('search').addEventListener('input', (e) => {
+          this.filterKarteList(e.target.value);
+        });
+        
+        // ウィンドウクリックでモーダルを閉じる
+        window.addEventListener('click', (event) => {
+          if (event.target === document.getElementById('list-modal')) {
+            document.getElementById('list-modal').style.display = 'none';
+          }
+        });
+        
+        // 接続状態の監視
+        window.addEventListener('online', () => {
+          document.getElementById('connection-status').textContent = 'オンライン';
+          document.getElementById('connection-status').style.color = '';
+          this.showNotification('ネットワーク接続が復旧しました', 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+          document.getElementById('connection-status').textContent = 'オフライン';
+          document.getElementById('connection-status').style.color = 'red';
+          this.showNotification('オフライン状態になりました', 'warning');
+        });
+        
+        // ページを離れる前に変更を確認
+        window.addEventListener('beforeunload', (e) => {
+          if (this.hasChanges) {
+            e.preventDefault();
+            e.returnValue = '保存されていない変更があります。ページを離れますか？';
+            return e.returnValue;
+          }
+        });
+      },
+      
+      // 新規カルテを作成
+      createNew: function() {
+        this.currentId = null;
+        document.getElementById('current-karte-id').textContent = '新規カルテ';
+        document.getElementById('last-saved').textContent = '-';
+        
+        // 各グリッドにテンプレートデータをロード
+        this.grids.basic.loadData(this.deepCopy(this.templates.basic));
+        this.grids.payment.loadData(this.deepCopy(this.templates.payment));
+        this.grids.expense.loadData(this.deepCopy(this.templates.expense));
+        this.grids.summary.loadData(this.deepCopy(this.templates.summary));
+        
+        // 変更フラグをリセット
+        this.hasChanges = false;
+      },
+      
+      // 入金合計を計算
+      calculatePaymentTotal: function() {
+        if (!this.grids.payment) return;
+        
+        const data = this.grids.payment.getData();
+        let total = 0;
+        const lastRowIndex = data.length - 1;
+        
+        // 合計行以外の金額を合計
+        for (let i = 1; i < lastRowIndex; i++) {
+          const value = this.parseNumber(data[i][2]);
+          if (!isNaN(value)) {
+            total += value;
+          }
+        }
+        
+        // 合計を表示
+        this.grids.payment.setDataAtCell(lastRowIndex, 2, total, 'internal');
+        
+        // 収支情報に反映
+        if (this.grids.summary) {
+          this.grids.summary.setDataAtCell(1, 1, total, 'internal');
+          this.calculateBalance();
+        }
+      },
+      
+      // 支払合計を計算
+      calculateExpenseTotal: function() {
+        if (!this.grids.expense) return;
+        
+        const data = this.grids.expense.getData();
+        let total = 0;
+        const lastRowIndex = data.length - 1;
+        
+        // 合計行以外の金額を合計
+        for (let i = 1; i < lastRowIndex; i++) {
+          const value = this.parseNumber(data[i][2]);
+          if (!isNaN(value)) {
+            total += value;
+          }
+        }
+        
+        // 合計を表示
+        this.grids.expense.setDataAtCell(lastRowIndex, 2, total, 'internal');
+        
+        // 収支情報に反映
+        if (this.grids.summary) {
+          this.grids.summary.setDataAtCell(1, 3, total, 'internal');
+          this.calculateBalance();
+        }
+      },
+      
+      // 収支バランスを計算
+      calculateBalance: function() {
+        if (!this.grids.summary) return;
+        
+        const data = this.grids.summary.getData();
+        const income = this.parseNumber(data[1][1]);
+        const expense = this.parseNumber(data[1][3]);
+        const balance = income - expense;
+        
+        // 収支を表示
+        this.grids.summary.setDataAtCell(1, 5, balance, 'internal');
+      },
+      
+      // カルテを保存
+      saveKarte: function() {
+        // オフライン確認
+        if (!navigator.onLine) {
+          this.showNotification('オフライン状態では保存できません', 'error');
+          return;
+        }
+        
+        // 保存中表示
+        document.getElementById('last-saved').textContent = '保存中...';
+        
+        // カルテデータを収集
+        const karteData = {
+          basicData: this.grids.basic.getData(),
+          paymentData: this.grids.payment.getData(),
+          expenseData: this.grids.expense.getData(),
+          summaryData: this.grids.summary.getData(),
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // 基本情報から識別データを抽出
+        const basicData = this.grids.basic.getData();
+        
+        // カルテNo、団体名などをkarteInfoとして保存（検索用）
+        const karteInfo = {
+          karteNo: basicData[0][1] || '',
+          tantosha: basicData[0][3] || '',
+          date: basicData[0][5] || '',
+          dantaiName: basicData[1][1] || '',
+          personCount: basicData[1][3] || '',
+          destination: basicData[1][5] || ''
+        };
+        
+        karteData.karteInfo = karteInfo;
+        
+        // 保存処理
+        let savePromise;
+        
+        if (this.currentId) {
+          // 既存のカルテを更新
+          savePromise = db.collection('karte').doc(this.currentId).update(karteData);
+        } else {
+          // 新規カルテを作成
+          savePromise = db.collection('karte').add(karteData)
+            .then(docRef => {
+              this.currentId = docRef.id;
+              return docRef;
+            });
+        }
+        
+        savePromise
+          .then(() => {
+            const now = new Date();
+            document.getElementById('last-saved').textContent = now.toLocaleString();
+            
+            // カルテIDを表示
+            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
+            
+            // 変更フラグをリセット
+            this.hasChanges = false;
+            
+            // 保存成功通知
+            this.showNotification('カルテを保存しました', 'success');
+          })
+          .catch(error => {
+            console.error('保存エラー:', error);
+            document.getElementById('last-saved').textContent = '保存失敗';
+            this.showNotification('保存に失敗しました: ' + error.message, 'error');
+          });
+      },
+      
+      // カルテリストを読み込む
+      loadKarteList: function() {
+        // 変更があれば確認
+        if (this.hasChanges) {
+          if (!confirm('保存されていない変更があります。カルテ一覧を開きますか？')) {
+            return;
+          }
+        }
+        
+        const listBody = document.querySelector('#karte-list tbody');
+        listBody.innerHTML = '<tr><td colspan="6">読み込み中...</td></tr>';
+        
+        document.getElementById('list-modal').style.display = 'block';
+        
+        // 検索フィールドをクリア
+        document.getElementById('search').value = '';
+        
+        db.collection('karte').orderBy('lastUpdated', 'desc').limit(50).get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              listBody.innerHTML = '<tr><td colspan="6">カルテがありません</td></tr>';
+              return;
+            }
+            
+            // データ行
+            let html = '';
+            querySnapshot.forEach(doc => {
+              const data = doc.data();
+              const info = data.karteInfo || {};
+              
+              html += `
+                <tr data-id="${doc.id}">
+                  <td>${info.karteNo || '-'}</td>
+                  <td>${info.tantosha || '-'}</td>
+                  <td>${info.dantaiName || '-'}</td>
+                  <td>${info.personCount || '-'}</td>
+                  <td>${info.destination || '-'}</td>
+                  <td>
+                    <button class="edit-btn" data-id="${doc.id}">編集</button>
+                    <button class="delete-btn" data-id="${doc.id}">削除</button>
+                  </td>
+                </tr>
+              `;
+            });
+            
+            listBody.innerHTML = html;
+            
+            // 編集ボタンのイベント設定
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                this.loadKarte(id);
+                document.getElementById('list-modal').style.display = 'none';
+              });
+            });
+            
+            // 削除ボタンのイベント設定
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                if (confirm('このカルテを削除してもよろしいですか？')) {
+                  this.deleteKarte(id);
+                }
+              });
+            });
+          })
+          .catch(error => {
+            console.error('カルテリスト取得エラー:', error);
+            listBody.innerHTML = `<tr><td colspan="6">エラー: ${error.message}</td></tr>`;
+            this.showNotification('カルテ一覧の取得に失敗しました', 'error');
+          });
+      },
+      
+      // カルテ一覧をフィルタリング
+      filterKarteList: function(searchText) {
+        const rows = document.querySelectorAll('#karte-list tbody tr');
+        searchText = searchText.toLowerCase();
+        
+        let foundCount = 0;
+        
+        rows.forEach(row => {
+          if (row.querySelector('td[colspan]')) return; // メッセージ行はスキップ
+          
+          let found = false;
+          const cells = row.querySelectorAll('td:not(:last-child)');
+          
+          cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(searchText)) {
+              found = true;
+            }
+          });
+          
+          row.style.display = found ? '' : 'none';
+          if (found) foundCount++;
+        });
+        
+        // 結果がない場合
+        if (foundCount === 0 && searchText) {
+          const listBody = document.querySelector('#karte-list tbody');
+          // 既存の「結果なし」行があれば削除
+          const noResultRow = document.getElementById('no-results-row');
+          if (noResultRow) noResultRow.remove();
+          
+          // 結果なし行を追加
+          if (rows.length > 0) {
+            const message = document.createElement('tr');
+            message.id = 'no-results-row';
+            message.innerHTML = `<td colspan="6" style="text-align: center;">「${searchText}」に一致するカルテはありません</td>`;
+            listBody.appendChild(message);
+          }
+        } else {
+          // 既存の「結果なし」行があれば削除
+          const noResultRow = document.getElementById('no-results-row');
+          if (noResultRow) noResultRow.remove();
+        }
+      },
+      
+      // カルテを読み込む
+      loadKarte: function(id) {
+        // 変更があれば確認
+        if (this.hasChanges) {
+          if (!confirm('保存されていない変更があります。別のカルテを開きますか？')) {
+            return;
+          }
+        }
+        
+        document.getElementById('last-saved').textContent = '読み込み中...';
+        
+        db.collection('karte').doc(id).get()
+          .then(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              
+              // データを各グリッドにロード
+              if (data.basicData) this.grids.basic.loadData(data.basicData);
+              if (data.paymentData) this.grids.payment.loadData(data.paymentData);
+              if (data.expenseData) this.grids.expense.loadData(data.expenseData);
+              if (data.summaryData) this.grids.summary.loadData(data.summaryData);
+              
+              // 現在のIDを保存
+              this.currentId = id;
+              
+              // カルテNoを表示
+              const karteInfo = data.karteInfo || {};
+              document.getElementById('current-karte-id').textContent = karteInfo.karteNo || id;
+              
+              // 最終更新日時を表示
+              if (data.lastUpdated) {
+                const lastUpdated = data.lastUpdated.toDate();
+                document.getElementById('last-saved').textContent = lastUpdated.toLocaleString();
+              } else {
+                document.getElementById('last-saved').textContent = '-';
+              }
+              
+              // 変更フラグをリセット
+              this.hasChanges = false;
+              
+              // 通知
+              this.showNotification('カルテを読み込みました', 'success');
+            } else {
+              this.showNotification('カルテが見つかりません', 'error');
+              document.getElementById('last-saved').textContent = '-';
+            }
+          })
+          .catch(error => {
+            console.error('カルテ読み込みエラー:', error);
+            document.getElementById('last-saved').textContent = '読み込み失敗';
+            this.showNotification('カルテの読み込みに失敗しました', 'error');
+          });
+      },
+      
+      // カルテを削除
+      deleteKarte: function(id) {
+        db.collection('karte').doc(id).delete()
+          .then(() => {
+            this.showNotification('カルテを削除しました', 'success');
+            
+            // カルテリストを再読み込み
+            this.loadKarteList();
+            
+            // 現在表示中のカルテが削除された場合は新規作成
+            if (this.currentId === id) {
+              this.createNew();
+            }
+          })
+          .catch(error => {
+            console.error('削除エラー:', error);
+            this.showNotification('削除に失敗しました: ' + error.message, 'error');
+          });
+      },
+      
+      // Excelにエクスポート
+      exportToExcel: function() {
+        try {
+          // ワークブックを作成
+          const wb = XLSX.utils.book_new();
+          
+          // 各シートを追加
+          const basicWs = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
+          XLSX.utils.book_append_sheet(wb, basicWs, '基本情報');
+          
+          const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
+          XLSX.utils.book_append_sheet(wb, paymentWs, '入金情報');
+          
+          const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
+          XLSX.utils.book_append_sheet(wb, expenseWs, '支払情報');
+          
+          const summaryWs = XLSX.utils.aoa_to_sheet(this.grids.summary.getData());
+          XLSX.utils.book_append_sheet(wb, summaryWs, '収支情報');
+          
+          // ファイル名を生成
+          const basicData = this.grids.basic.getData();
+          const karteNo = basicData[0][1] || 'カルテ';
+          const today = new Date();
+          const dateStr = today.getFullYear() +
+                         ('0' + (today.getMonth() + 1)).slice(-2) +
+                         ('0' + today.getDate()).slice(-2);
+          const filename = `${karteNo}_${dateStr}.xlsx`;
+          
+          // ファイルとして保存
+          XLSX.writeFile(wb, filename);
+          
+          this.showNotification('Excelファイルを出力しました', 'success');
+        } catch (error) {
+          console.error('エクスポートエラー:', error);
+          this.showNotification('エクスポートに失敗しました: ' + error.message, 'error');
+        }
+      },
+      
+      // 通知を表示
+      showNotification: function(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        
+        // タイプに応じたスタイル
+        switch (type) {
+          case 'success':
+            notification.style.backgroundColor = '#4CAF50';
+            break;
+          case 'error':
+            notification.style.backgroundColor = '#f44336';
+            break;
+          case 'warning':
+            notification.style.backgroundColor = '#ff9800';
+            break;
+          default:
+            notification.style.backgroundColor = '#2196F3';
+        }
+        
+        // 表示
+        notification.style.display = 'block';
+        
+        // 3秒後に消す
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 3000);
+      },
+      
+      // 変更があったことをマーク
+      markHasChanges: function() {
+        this.hasChanges = true;
+      },
+      
+      // 行数を取得
+      getRowCount: function(gridName) {
+        if (!this.grids[gridName]) return 0;
+        return this.grids[gridName].countRows();
+      },
+      
+      // 数値に変換（カンマや通貨記号を除去）
+      parseNumber: function(value) {
+        if (value === null || value === undefined || value === '') return 0;
+        if (typeof value === 'number') return value;
+        
+        // 文字列に変換してカンマや通貨記号を除去
+        const cleanValue = String(value).replace(/[^\d.-]/g, '');
+        const number = parseFloat(cleanValue);
+        
+        return isNaN(number) ? 0 : number;
+      },
+      
+      // 深いコピーを作成
+      deepCopy: function(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+    };
+    
+    // アプリケーション初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      KarteApp.init();
+    });
+  </script>
 </body>
 </html>
