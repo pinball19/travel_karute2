@@ -730,19 +730,25 @@
         }
         document.getElementById('last-saved').textContent = '保存中...';
         try {
-          const basicData = this.grids.basic ? this.prepareDataForFirebase(this.grids.basic.getData()) : [];
-          const paymentData = this.grids.payment ? this.prepareDataForFirebase(this.grids.payment.getData()) : [];
-          const expenseData = this.grids.expense ? this.prepareDataForFirebase(this.grids.expense.getData()) : [];
-          const summaryData = this.grids.summary ? this.prepareDataForFirebase(this.grids.summary.getData()) : [];
+          // データをJSON文字列として保存
+          const basicDataString = JSON.stringify(this.grids.basic ? this.grids.basic.getData() : []);
+          const paymentDataString = JSON.stringify(this.grids.payment ? this.grids.payment.getData() : []);
+          const expenseDataString = JSON.stringify(this.grids.expense ? this.grids.expense.getData() : []);
+          const summaryDataString = JSON.stringify(this.grids.summary ? this.grids.summary.getData() : []);
+          
+          // 基本情報から抽出したオブジェクトデータは通常のオブジェクトとして保存
+          const basicData = this.grids.basic ? this.grids.basic.getData() : [];
+          const karteInfo = this.extractKarteInfo(basicData);
+          
           const karteData = {
-            basicData,
-            paymentData,
-            expenseData,
-            summaryData,
+            basicDataString,
+            paymentDataString,
+            expenseDataString,
+            summaryDataString,
+            karteInfo,
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
           };
-          const karteInfo = this.extractKarteInfo(basicData);
-          karteData.karteInfo = karteInfo;
+          
           let savePromise;
           if (this.currentId) {
             savePromise = db.collection('karte').doc(this.currentId).update(karteData);
@@ -750,6 +756,7 @@
             savePromise = db.collection('karte').add(karteData)
               .then(docRef => { this.currentId = docRef.id; return docRef; });
           }
+          
           savePromise.then(() => {
             const now = new Date();
             document.getElementById('last-saved').textContent = now.toLocaleString();
@@ -768,7 +775,7 @@
         }
       },
       
-      // ========= Firestore向けデータ変換 =========
+      // ========= Firestore向けデータ変換 (互換性維持のため残す) =========
       prepareDataForFirebase: function(data) {
         if (!data || !Array.isArray(data)) { return []; }
         const processedData = JSON.parse(JSON.stringify(data));
@@ -861,22 +868,22 @@
           });
       },
       
-      // ========= カルテ読み込み =========
-      loadKarte: function(id) {
-        if (this.hasChanges && !confirm('保存されていない変更があります。別のカルテを開きますか？')) { return; }
-        document.getElementById('last-saved').textContent = '読み込み中...';
-        db.collection('karte').doc(id).get()
-          .then(doc => {
-            if (!doc.exists) {
-              this.showNotification('カルテが見つかりません', 'error');
-              document.getElementById('last-saved').textContent = '-';
-              return;
+paymentData) {
+              this.grids.payment.loadData(data.paymentData);
             }
-            const data = doc.data();
-            if (data.basicData)   this.grids.basic.loadData(data.basicData);
-            if (data.paymentData) this.grids.payment.loadData(data.paymentData);
-            if (data.expenseData) this.grids.expense.loadData(data.expenseData);
-            if (data.summaryData) this.grids.summary.loadData(data.summaryData);
+            
+            if (data.expenseDataString) {
+              this.grids.expense.loadData(JSON.parse(data.expenseDataString));
+            } else if (data.expenseData) {
+              this.grids.expense.loadData(data.expenseData);
+            }
+            
+            if (data.summaryDataString) {
+              this.grids.summary.loadData(JSON.parse(data.summaryDataString));
+            } else if (data.summaryData) {
+              this.grids.summary.loadData(data.summaryData);
+            }
+            
             this.currentId = id;
             const karteInfo = data.karteInfo || {};
             document.getElementById('current-karte-id').textContent = karteInfo.karteNo || id;
@@ -892,119 +899,3 @@
             this.showNotification('カルテの読み込みに失敗しました', 'error');
           });
       },
-      
-      // ========= カルテ削除 =========
-      deleteKarte: function(id) {
-        db.collection('karte').doc(id).delete()
-          .then(() => {
-            this.showNotification('カルテを削除しました', 'success');
-            this.loadKarteList();
-            if (this.currentId === id) { this.createNew(); }
-          })
-          .catch(error => {
-            console.error('削除エラー:', error);
-            this.showNotification('削除に失敗しました: ' + error.message, 'error');
-          });
-      },
-      
-      // ========= Excelエクスポート =========
-      exportToExcel: function() {
-        try {
-          const wb = XLSX.utils.book_new();
-          const basicWs   = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
-          const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
-          const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
-          const summaryWs = XLSX.utils.aoa_to_sheet(this.grids.summary.getData());
-          XLSX.utils.book_append_sheet(wb, basicWs, '基本情報');
-          XLSX.utils.book_append_sheet(wb, paymentWs, '入金情報');
-          XLSX.utils.book_append_sheet(wb, expenseWs, '支払情報');
-          XLSX.utils.book_append_sheet(wb, summaryWs, '収支情報');
-          const basicData = this.grids.basic.getData();
-          let karteNo = '';
-          if (basicData && basicData.length > 0 && basicData[0].length > 1) {
-            karteNo = basicData[0][1] || '';
-          }
-          const now = new Date();
-          const y = now.getFullYear();
-          const m = ('0' + (now.getMonth() + 1)).slice(-2);
-          const d = ('0' + now.getDate()).slice(-2);
-          const filename = `${karteNo || 'カルテ'}_${y}${m}${d}.xlsx`;
-          XLSX.writeFile(wb, filename);
-          this.showNotification('Excelファイルを出力しました', 'success');
-        } catch (error) {
-          console.error('エクスポートエラー:', error);
-          this.showNotification('エクスポートに失敗しました: ' + error.message, 'error');
-        }
-      },
-      
-      // ========= カルテ一覧検索フィルタ =========
-      filterKarteList: function(searchText) {
-        const rows = document.querySelectorAll('#karte-list tbody tr');
-        searchText = searchText.toLowerCase();
-        let foundCount = 0;
-        rows.forEach(row => {
-          if (row.querySelector('td[colspan]')) { return; }
-          let found = false;
-          const cells = row.querySelectorAll('td:not(:last-child)');
-          cells.forEach(cell => {
-            if (cell.textContent.toLowerCase().includes(searchText)) { found = true; }
-          });
-          row.style.display = found ? '' : 'none';
-          if (found) { foundCount++; }
-        });
-        if (foundCount === 0 && searchText) {
-          const listBody = document.querySelector('#karte-list tbody');
-          const noResultRow = document.getElementById('no-results-row');
-          if (noResultRow) { noResultRow.remove(); }
-          if (rows.length > 0) {
-            const message = document.createElement('tr');
-            message.id = 'no-results-row';
-            message.innerHTML = `<td colspan="7" style="text-align: center;">「${searchText}」に一致するカルテはありません</td>`;
-            listBody.appendChild(message);
-          }
-        } else {
-          const noResultRow = document.getElementById('no-results-row');
-          if (noResultRow) { noResultRow.remove(); }
-        }
-      },
-      
-      // ========= ユーティリティ =========
-      markHasChanges: function() { this.hasChanges = true; },
-      getRowCount: function(gridName) { return this.grids[gridName] ? this.grids[gridName].countRows() : 0; },
-      parseNumber: function(value) {
-        if (value === null || value === undefined || value === '') { return 0; }
-        if (typeof value === 'number') { return isNaN(value) ? 0 : value; }
-        const cleanValue = String(value).replace(/[^\d.-]/g, '');
-        const number = parseFloat(cleanValue);
-        return isNaN(number) ? 0 : number;
-      },
-      deepCopy: function(obj) { return JSON.parse(JSON.stringify(obj)); },
-      adjustTableHeights: function() {
-        ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
-          const grid = this.grids[gridName];
-          if (grid) {
-            try {
-              grid.render();
-              const table = grid.rootElement.querySelector('.htCore');
-              if (table) {
-                const tableHeight = table.offsetHeight;
-                grid.rootElement.style.height = tableHeight + 'px';
-                const container = grid.rootElement.closest('.grid-container');
-                if (container) { container.style.height = 'auto'; }
-                const wtHolder = grid.rootElement.querySelector('.wtHolder');
-                if (wtHolder) { wtHolder.style.height = 'auto'; }
-                const wtSpreader = grid.rootElement.querySelector('.wtSpreader');
-                if (wtSpreader) { wtSpreader.style.height = 'auto'; }
-              }
-            } catch (e) {
-              console.error(`${gridName}の高さ調整エラー:`, e);
-            }
-          }
-        });
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => { KarteApp.init(); });
-  </script>
-</body>
-</html>
