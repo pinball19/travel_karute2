@@ -1,8 +1,8 @@
 /**
- * 支払情報セクションのテンプレート（行数を増やした版）
+ * 入金情報セクションのテンプレート（行数を増やした版）
  */
-const EXPENSE_TEMPLATE = [
-  ['利用日', '手配先名；該当に〇を付ける', '電話/FAX', '担当者', '支払予定日', '支払金額', 'チェック', ''],
+const PAYMENT_TEMPLATE = [
+  ['入金予定日', '入金場所', '入金予定額', '入金日', '入金額', '備考', 'チェック', ''],
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
@@ -10,68 +10,69 @@ const EXPENSE_TEMPLATE = [
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
   ['', '', '', '', '', '', '', ''],
-  ['', '', '', '', '', '', '', ''],
-  ['B；支払合計', '', '', '', '', '', '', '']
+  ['A；入金合計', '', '', '', '', '', '', '']
 ];
 
 /**
- * 支払情報セクションのマージセル設定
+ * 入金情報セクションのマージセル設定
  */
-const EXPENSE_MERGED_CELLS = [
-  {row: 9, col: 0, rowspan: 1, colspan: 5} // B；支払合計
+const PAYMENT_MERGED_CELLS = [
+  {row: 8, col: 0, rowspan: 1, colspan: 4} // A；入金合計
 ];
 
 /**
- * 支払情報セクションのセルタイプ情報
+ * 入金情報セクションのセルタイプ情報
  */
-const EXPENSE_CELL_TYPES = {
+const PAYMENT_CELL_TYPES = {
   // ヘッダーセル
   headerCells: [
     {row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}, {row: 0, col: 3},
-    {row: 0, col: 4}, {row: 0, col: 5}, {row: 0, col: 6}, {row: 9, col: 0}
+    {row: 0, col: 4}, {row: 0, col: 5}, {row: 0, col: 6}, {row: 8, col: 0}
   ],
   
-  // 数値入力セル（支払金額）
+  // 数値入力セル（入金予定額、入金額）
   numericCells: [
-    {row: 1, col: 5}, {row: 2, col: 5}, {row: 3, col: 5},
-    {row: 4, col: 5}, {row: 5, col: 5}, {row: 6, col: 5},
-    {row: 7, col: 5}, {row: 8, col: 5}
+    {row: 1, col: 2}, {row: 1, col: 4},
+    {row: 2, col: 2}, {row: 2, col: 4},
+    {row: 3, col: 2}, {row: 3, col: 4},
+    {row: 4, col: 2}, {row: 4, col: 4},
+    {row: 5, col: 2}, {row: 5, col: 4},
+    {row: 6, col: 2}, {row: 6, col: 4},
+    {row: 7, col: 2}, {row: 7, col: 4}
   ],
   
-  // 日付入力セル（利用日、支払予定日）
+  // 日付入力セル（入金予定日、入金日）
   dateCells: [
-    {row: 1, col: 0}, {row: 1, col: 4},
-    {row: 2, col: 0}, {row: 2, col: 4},
-    {row: 3, col: 0}, {row: 3, col: 4},
-    {row: 4, col: 0}, {row: 4, col: 4},
-    {row: 5, col: 0}, {row: 5, col: 4},
-    {row: 6, col: 0}, {row: 6, col: 4},
-    {row: 7, col: 0}, {row: 7, col: 4},
-    {row: 8, col: 0}, {row: 8, col: 4}
+    {row: 1, col: 0}, {row: 1, col: 3},
+    {row: 2, col: 0}, {row: 2, col: 3},
+    {row: 3, col: 0}, {row: 3, col: 3},
+    {row: 4, col: 0}, {row: 4, col: 3},
+    {row: 5, col: 0}, {row: 5, col: 3},
+    {row: 6, col: 0}, {row: 6, col: 3},
+    {row: 7, col: 0}, {row: 7, col: 3}
   ],
   
   // 合計セル
   totalCells: [
-    {row: 9, col: 5} // 支払合計の金額セル
+    {row: 8, col: 4} // 入金合計の金額セル
   ]
 };
 
 /**
- * 支払情報と計算フィールドのマッピング
+ * 入金情報と計算フィールドのマッピング
  */
-const EXPENSE_MAPPING = {
-  // 支払金額セル
-  expenseAmounts: [
-    {row: 1, col: 5},
-    {row: 2, col: 5},
-    {row: 3, col: 5},
-    {row: 4, col: 5},
-    {row: 5, col: 5},
-    {row: 6, col: 5},
-    {row: 7, col: 5},
-    {row: 8, col: 5}
+const PAYMENT_MAPPING = {
+  // 入金額セル
+  paymentAmounts: [
+    {row: 1, col: 4},
+    {row: 2, col: 4},
+    {row: 3, col: 4},
+    {row: 4, col: 4},
+    {row: 5, col: 4},
+    {row: 6, col: 4},
+    {row: 7, col: 4}
   ],
   
-  // 支払合計セル
-  expenseTotal: {row: 9, col: 5}
+  // 入金合計セル
+  paymentTotal: {row: 8, col: 4}
 };
