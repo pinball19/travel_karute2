@@ -340,8 +340,10 @@
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
             }
+            // ※ 修正箇所：列6（チェック）と列7（手配完了）はチェックボックスではなくテキスト入力可能とする
+            // ここでは cellProperties.type を設定しない（または明示的に 'text' とする）
             if ((col === 6 || col === 7) && row > 0 && row < that.getRowCount('expense') - 1) {
-              cellProperties.type = 'checkbox';
+              cellProperties.type = 'text';
             }
             if (row === that.getRowCount('expense') - 1) {
               cellProperties.readOnly = true;
