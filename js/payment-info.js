@@ -1,7 +1,7 @@
 /**
- * 入金情報セクションの管理
+ * 基本情報セクションの管理
  */
-const PaymentInfoManager = {
+const BasicInfoManager = {
   // Handsontableインスタンス
   hot: null,
   
@@ -9,14 +9,14 @@ const PaymentInfoManager = {
    * 初期化
    */
   initialize: function() {
-    const container = document.getElementById('payment-container');
+    const container = document.getElementById('basic-container');
     if (!container) {
-      console.error('payment-containerが見つかりません');
+      console.error('basic-containerが見つかりません');
       return;
     }
     
     // テンプレートデータを準備（ディープコピー）
-    const data = JSON.parse(JSON.stringify(PAYMENT_TEMPLATE));
+    const data = JSON.parse(JSON.stringify(BASIC_TEMPLATE));
     
     // Handsontableの設定オプション
     const options = {
@@ -24,13 +24,20 @@ const PaymentInfoManager = {
       ...APP_CONFIG.HOT_OPTIONS,
       colHeaders: false,
       colWidths: COLUMN_WIDTHS,
-      mergeCells: PAYMENT_MERGED_CELLS,
+      mergeCells: BASIC_MERGED_CELLS,
+      height: 'auto',        // 高さを自動調整
+      autoRowSize: true,     // 行高さを自動調整
+      stretchH: 'all',       // 横幅をコンテナに合わせる
+      viewportRowRenderingOffset: 1000, // 十分な行を一度にレンダリング
+      // スクロールバーの無効化
+      renderAllRows: true,   // すべての行を一度にレンダリング
+      
       // セルのカスタマイズ
       cells: function(row, col) {
         const cellProperties = {};
         
-        // ヘッダーセル
-        const isHeaderCell = PAYMENT_CELL_TYPES.headerCells.some(cell => 
+        // ヘッダーセル（ラベル）
+        const isHeaderCell = BASIC_CELL_TYPES.headerCells.some(cell => 
           cell.row === row && cell.col === col
         );
         if (isHeaderCell) {
@@ -38,8 +45,8 @@ const PaymentInfoManager = {
           cellProperties.readOnly = true;
         }
         
-        // 数値入力セル（入金予定額、入金額）
-        const isNumericCell = PAYMENT_CELL_TYPES.numericCells.some(cell => 
+        // 数値入力セル
+        const isNumericCell = BASIC_CELL_TYPES.numericCells.some(cell => 
           cell.row === row && cell.col === col
         );
         if (isNumericCell) {
@@ -51,7 +58,7 @@ const PaymentInfoManager = {
         }
         
         // 日付入力セル
-        const isDateCell = PAYMENT_CELL_TYPES.dateCells.some(cell => 
+        const isDateCell = BASIC_CELL_TYPES.dateCells.some(cell => 
           cell.row === row && cell.col === col
         );
         if (isDateCell) {
@@ -59,21 +66,13 @@ const PaymentInfoManager = {
           cellProperties.dateFormat = 'YYYY/MM/DD';
         }
         
-        // 合計セル
-        const isTotalCell = PAYMENT_CELL_TYPES.totalCells.some(cell => 
-          cell.row === row && cell.col === col
-        );
-        if (isTotalCell) {
-          cellProperties.className = 'total-cell';
-          cellProperties.readOnly = true;
-        }
-        
         return cellProperties;
       },
+      
       // データ変更後のフック
       afterChange: function(changes, source) {
         if (source === 'edit' || source === 'paste') {
-          PaymentInfoManager.calculatePaymentTotal();
+          BasicInfoManager.handleDataChange(changes);
         }
       }
     };
@@ -82,7 +81,7 @@ const PaymentInfoManager = {
     this.hot = new Handsontable(container, options);
     
     // グローバルインスタンスに保存
-    KarteData.paymentHot = this.hot;
+    KarteData.basicHot = this.hot;
     
     // イベントリスナーの設定
     this.setupEventListeners();
@@ -96,7 +95,7 @@ const PaymentInfoManager = {
    */
   setupEventListeners: function() {
     // 更新イベントのリスナーを登録
-    KarteData.updateEvent.addListener('payment-info', (data) => {
+    KarteData.updateEvent.addListener('basic-info', (data) => {
       // 他のセクションからの更新を処理
       if (data.type === 'summary-update') {
         // 必要に応じて処理を追加
@@ -105,50 +104,64 @@ const PaymentInfoManager = {
   },
   
   /**
-   * 入金合計を計算
+   * データ変更を処理
+   * @param {Array} changes - 変更されたセルの情報
    */
-  calculatePaymentTotal: function() {
+  handleDataChange: function(changes) {
+    if (!changes || !changes.length) return;
+    
+    let personCountChanged = false;
+    
+    // 変更を処理
+    changes.forEach(([row, col, oldValue, newValue]) => {
+      // マッピングから変更されたフィールドを特定
+      for (const [field, cell] of Object.entries(BASIC_MAPPING)) {
+        if (cell.row === row && cell.col === col) {
+          // 人数フィールドの変更を検出
+          if (field === 'personCount') {
+            personCountChanged = true;
+          }
+          break;
+        }
+      }
+    });
+    
+    // 人数が変更された場合、基本情報を更新して他のセクションに通知
+    if (personCountChanged) {
+      this.updateBasicInfo();
+    }
+  },
+  
+  /**
+   * 基本情報を更新して他のセクションに通知
+   */
+  updateBasicInfo: function() {
     if (!this.hot) return;
     
-    try {
-      console.log('入金合計を計算します');
-      
-      // 現在のデータを取得
-      const data = this.hot.getData();
-      
-      // 入金額セル（指定された行のE列＝インデックス4）の値を合計
-      let total = 0;
-      
-      PAYMENT_MAPPING.paymentAmounts.forEach(cell => {
-        if (data[cell.row] && data[cell.row][cell.col] !== undefined && data[cell.row][cell.col] !== null && data[cell.row][cell.col] !== '') {
-          const value = parseFloat(String(data[cell.row][cell.col]).replace(/,/g, ''));
-          if (!isNaN(value)) {
-            total += value;
-            console.log(`入金額 (${cell.row+1},${cell.col+1}): ${value}`);
-          }
-        }
-      });
-      
-      console.log('入金合計:', total);
-      
-      // 合計を表示するセル（A；入金合計）を更新
-      const totalCell = PAYMENT_MAPPING.paymentTotal;
-      this.hot.setDataAtCell(totalCell.row, totalCell.col, total, 'internal');
-      
-      // 共有データを更新して他のセクションに通知
-      KarteData.sharedData.paymentTotal = total;
-      
-      // 更新イベントを発行
-      KarteData.updateEvent.emit('payment', {
-        type: 'payment-update',
-        paymentTotal: total
-      });
-      
-      return total;
-    } catch (error) {
-      console.error('入金合計の計算中にエラーが発生しました:', error);
-      return 0;
+    // 現在のデータを取得
+    const data = this.hot.getData();
+    
+    // 基本情報を抽出
+    const basicInfo = {};
+    
+    for (const [key, cell] of Object.entries(BASIC_MAPPING)) {
+      if (data[cell.row] && data[cell.row][cell.col] !== undefined) {
+        basicInfo[key] = data[cell.row][cell.col];
+      }
     }
+    
+    // personCountは数値に変換
+    if (basicInfo.personCount) {
+      const count = parseFloat(String(basicInfo.personCount).replace(/,/g, ''));
+      basicInfo.personCount = isNaN(count) ? 0 : count;
+    }
+    
+    // 更新イベントを発行
+    KarteData.updateEvent.emit('basic', {
+      type: 'basic-update',
+      personCount: basicInfo.personCount,
+      basicInfo: basicInfo
+    });
   },
   
   /**
@@ -157,13 +170,25 @@ const PaymentInfoManager = {
   adjustHeight: function() {
     if (!this.hot) return;
     
-    // コンテナの高さをテーブルサイズに合わせて調整
-    const container = this.hot.rootElement;
-    if (container) {
-      const table = container.querySelector('.handsontable');
+    try {
+      // 再レンダリングして高さを更新
+      this.hot.render();
+      
+      // テーブルの実際の高さを取得
+      const table = this.hot.rootElement.querySelector('.htCore');
       if (table) {
-        container.style.height = table.offsetHeight + 'px';
+        // コンテナの高さをテーブルの高さに合わせる
+        const actualHeight = table.offsetHeight;
+        this.hot.rootElement.style.height = actualHeight + 'px';
+        
+        // 親コンテナにも高さを設定
+        const containerElement = this.hot.rootElement.closest('.hot-container');
+        if (containerElement) {
+          containerElement.style.height = actualHeight + 'px';
+        }
       }
+    } catch (error) {
+      console.error('高さ調整中にエラーが発生しました:', error);
     }
   }
 };
