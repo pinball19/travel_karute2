@@ -282,7 +282,7 @@
           afterChange: (changes, source) => {
             if (source === 'edit' || source === 'paste') {
               console.log("入金グリッド afterChange:", changes);
-              // 合計セルの変更があれば即時 Summary に転送
+              // 合計セルの変更があれば即時転送
               setTimeout(() => {
                 that.calculatePaymentTotal();
                 that.markHasChanges();
@@ -563,7 +563,9 @@
           console.log("calculatePaymentTotal: total =", total);
           // dataModel に保存
           this.dataModel.paymentTotal = total;
-          // 最終行の入金合計セルを Summary に即時転送
+          // 支払グリッドの最終行（A 入金合計）のセルも更新
+          this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
+          // Summary グリッドの旅行総額/A にも即時転送
           this.grids.summary.setDataAtCell(1, 4, total, 'internal');
           // debounce を使って再計算
           this.debouncedUpdateSummary();
