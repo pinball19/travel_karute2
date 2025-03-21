@@ -89,10 +89,12 @@
       <div>接続状態: <span id="connection-status">オンライン</span></div>
     </footer>
   </div>
+  <!-- カルテ一覧画面（初回表示用） -->
   <div id="list-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <h2>カルテ一覧</h2>
+      <!-- 検索バー -->
       <div class="search-container">
         <input type="text" id="search" placeholder="検索..." />
       </div>
@@ -183,7 +185,9 @@
         console.log("KarteApp.init() start");
         this.initGrids();
         this.setupEventListeners();
-        this.createNew();
+        // 初回表示時にカルテ一覧を表示する
+        this.loadKarteList();
+        document.getElementById('list-modal').style.display = 'block';
         setTimeout(() => { this.adjustTableHeights(); }, 500);
         console.log("KarteApp.init() end");
       },
@@ -340,8 +344,7 @@
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
             }
-            // ※ 修正箇所：列6（チェック）と列7（手配完了）はチェックボックスではなくテキスト入力可能とする
-            // ここでは cellProperties.type を設定しない（または明示的に 'text' とする）
+            // 修正：列6（チェック）と列7（手配完了）はチェックボックスではなくテキスト入力可能にする
             if ((col === 6 || col === 7) && row > 0 && row < that.getRowCount('expense') - 1) {
               cellProperties.type = 'text';
             }
