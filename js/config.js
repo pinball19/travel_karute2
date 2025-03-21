@@ -3,12 +3,13 @@
  * 実際のプロジェクト情報に置き換えてください
  */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBJmvoumJa1zcNBMNcJt4LP2Zjd2LbzEG0",
+  authDomain: "travelkarute.firebaseapp.com",
+  projectId: "travelkarute",
+  storageBucket: "travelkarute.firebasestorage.app",
+  messagingSenderId: "635350270309",
+  appId: "1:635350270309:web:2498d21f9f134defeda18c",
+  measurementId: "G-REHJZHXSR9"
 };
 
 // Firebaseの初期化
