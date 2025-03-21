@@ -81,18 +81,10 @@
       color: #666;
     }
     /* 各セクションの色 */
-    .basic-section .section-header {
-      background-color: #4472c4; /* 青 */
-    }
-    .payment-section .section-header {
-      background-color: #70ad47; /* 緑 */
-    }
-    .expense-section .section-header {
-      background-color: #ed7d31; /* オレンジ */
-    }
-    .summary-section .section-header {
-      background-color: #7030a0; /* 紫 */
-    }
+    .basic-section .section-header { background-color: #4472c4; }
+    .payment-section .section-header { background-color: #70ad47; }
+    .expense-section .section-header { background-color: #ed7d31; }
+    .summary-section .section-header { background-color: #7030a0; }
     /* 行追加ボタン */
     .add-row-btn {
       margin: 5px 10px 10px 0;
@@ -104,17 +96,13 @@
       cursor: pointer;
       float: right;
     }
-    .add-row-btn:hover {
-      background-color: #45a049;
-    }
+    .add-row-btn:hover { background-color: #45a049; }
     /* モーダル */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
     }
@@ -130,8 +118,7 @@
     }
     .close {
       position: absolute;
-      top: 10px;
-      right: 15px;
+      top: 10px; right: 15px;
       font-size: 24px;
       font-weight: bold;
       cursor: pointer;
@@ -139,8 +126,7 @@
     /* 通知 */
     .notification {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 20px; right: 20px;
       padding: 10px 20px;
       background-color: #4caf50;
       color: white;
@@ -149,57 +135,35 @@
       z-index: 9999;
       display: none;
     }
-    /* Handsontableのスクロールバーを非表示に */
+    /* Handsontable のスクロールバー非表示 */
     .handsontable .wtHolder,
     .handsontable .ht_master .wtHolder,
     .handsontable .wtHider {
       overflow: visible !important;
       height: auto !important;
     }
+    .handsontable { height: auto !important; }
+    .handsontable .htCore { height: auto !important; }
+    .handsontable ::-webkit-scrollbar { display: none !important; }
     .handsontable {
-      height: auto !important;
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
     }
-    .handsontable .htCore {
-      height: auto !important;
-    }
-    .handsontable ::-webkit-scrollbar {
-      display: none !important;
-    }
-    .handsontable {
-      -ms-overflow-style: none !important; /* IE/Edge */
-      scrollbar-width: none !important;    /* Firefox */
-    }
-    .handsontable .wtSpreader {
-      height: auto !important;
-      width: auto !important;
-    }
-    .ht_clone_top {
-      z-index: 101 !important;
-    }
+    .handsontable .wtSpreader { height: auto !important; width: auto !important; }
+    .ht_clone_top { z-index: 101 !important; }
     /* カルテ一覧テーブル */
     #karte-list {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+      width: 100%; border-collapse: collapse; margin-top: 10px;
     }
-    #karte-list th,
-    #karte-list td {
+    #karte-list th, #karte-list td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
-    #karte-list th {
-      background-color: #f2f2f2;
-    }
-    #karte-list tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    #karte-list tr:hover {
-      background-color: #f1f1f1;
-    }
-    .search-container {
-      margin-bottom: 10px;
-    }
+    #karte-list th { background-color: #f2f2f2; }
+    #karte-list tr:nth-child(even) { background-color: #f9f9f9; }
+    #karte-list tr:hover { background-color: #f1f1f1; }
+    .search-container { margin-bottom: 10px; }
     #search {
       width: 100%;
       padding: 8px;
@@ -207,26 +171,19 @@
       border: 1px solid #ddd;
       border-radius: 4px;
     }
-    .edit-btn,
-    .delete-btn {
+    .edit-btn, .delete-btn {
       padding: 5px 10px;
       margin-right: 5px;
       font-size: 12px;
     }
-    .delete-btn {
-      background-color: #f44336;
-    }
-    .delete-btn:hover {
-      background-color: #d32f2f;
-    }
+    .delete-btn { background-color: #f44336; }
+    .delete-btn:hover { background-color: #d32f2f; }
   </style>
 </head>
 <body>
   <div class="app-container">
     <header>
-      <div class="app-title">
-        <h1>団体ナビ成約カルテ</h1>
-      </div>
+      <div class="app-title"><h1>団体ナビ成約カルテ</h1></div>
       <div class="app-info">
         <div>カルテID: <span id="current-karte-id">新規カルテ</span></div>
         <div>最終更新: <span id="last-saved">-</span></div>
@@ -246,21 +203,18 @@
         <div class="section-header">◆ 基本情報</div>
         <div id="basic-grid" class="grid-container"></div>
       </div>
-      
       <!-- 入金情報 -->
       <div class="section-container payment-section" id="payment-section">
         <div class="section-header">◆ 入金情報</div>
         <div id="payment-grid" class="grid-container"></div>
         <button id="add-payment-row" class="add-row-btn">行を追加</button>
       </div>
-      
       <!-- 支払情報 -->
       <div class="section-container expense-section" id="expense-section">
         <div class="section-header">◆ 支払情報</div>
         <div id="expense-grid" class="grid-container"></div>
         <button id="add-expense-row" class="add-row-btn">行を追加</button>
       </div>
-      
       <!-- 収支情報 -->
       <div class="section-container summary-section" id="summary-section">
         <div class="section-header">◆ 収支情報</div>
@@ -326,8 +280,6 @@
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      
-      // （将来的にdeprecated予定のメソッド。今は警告だけ出る）
       try {
         db.enablePersistence({ synchronizeTabs: true })
           .catch(function(err) {
@@ -349,18 +301,9 @@
 
     // ========= カルテアプリケーション =========
     const KarteApp = {
-      currentId: null,     // 現在のカルテID
-      hasChanges: false,   // データ変更フラグ
-      
-      // 各グリッドインスタンス
-      grids: {
-        basic: null,
-        payment: null,
-        expense: null,
-        summary: null
-      },
-      
-      // テンプレート（初期化時などに使用）
+      currentId: null,
+      hasChanges: false,
+      grids: { basic: null, payment: null, expense: null, summary: null },
       templates: {
         basic: [
           ['カルテNo', '', '自社担当者', '', '記入日', '', '個人通No', ''],
@@ -393,18 +336,12 @@
         this.initGrids();
         this.setupEventListeners();
         this.createNew();
-        
-        // 描画後に高さ調整
-        setTimeout(() => {
-          this.adjustTableHeights();
-        }, 500);
+        setTimeout(() => { this.adjustTableHeights(); }, 500);
       },
 
       // ========= グリッド初期化 =========
       initGrids: function() {
         const that = this;
-        
-        // --- 基本情報 ---
         this.grids.basic = new Handsontable(document.getElementById('basic-grid'), {
           data: this.deepCopy(this.templates.basic),
           rowHeaders: false,
@@ -425,13 +362,10 @@
             }
           },
           afterChange: (changes, source) => {
-            if (source === 'edit' || source === 'paste') {
-              that.markHasChanges();
-            }
+            if (source === 'edit' || source === 'paste') { that.markHasChanges(); }
           }
         });
         
-        // --- 入金情報 ---
         this.grids.payment = new Handsontable(document.getElementById('payment-grid'), {
           data: this.deepCopy(this.templates.payment),
           rowHeaders: true,
@@ -446,21 +380,16 @@
           overflow: 'visible',
           cells: (row, col) => {
             const cellProperties = {};
-            // 入金予定額(2)・入金額(4) は数値型
             if ((col === 2 || col === 4) && row > 0) {
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
             }
-            // チェック列(6)はチェックボックス
             if (col === 6 && row > 0 && row < that.getRowCount('payment') - 1) {
               cellProperties.type = 'checkbox';
             }
-            // 合計行は読み取り専用
             if (row === that.getRowCount('payment') - 1) {
               cellProperties.readOnly = true;
-              if (col === 0) {
-                cellProperties.className = 'total-cell';
-              }
+              if (col === 0) { cellProperties.className = 'total-cell'; }
             }
             return cellProperties;
           },
@@ -470,21 +399,15 @@
               that.markHasChanges();
             }
           },
-          // 合計行を最後に固定するためのフック
           afterCreateRow: function(index, amount, source) {
             try {
-              // ここでの `this` はHandsontableインスタンス
               const rowCount = this.countRows();
               const data = this.getData();
-              
-              // 合計行("A "で始まる)が最後の行でなければ移動
               if (!data[rowCount - 1][0] || !String(data[rowCount - 1][0]).startsWith('A ')) {
                 for (let i = 0; i < rowCount; i++) {
                   if (data[i][0] && String(data[i][0]).startsWith('A ')) {
                     const totalRow = data[i].slice();
-                    // まず合計行を削除
                     this.alter('remove_row', i, 1);
-                    // 最後の1つ手前に行を追加
                     this.alter('insert_row', rowCount - 1, 1);
                     this.setDataAtRow(rowCount - 1, totalRow);
                     break;
@@ -493,19 +416,16 @@
               }
               that.calculatePaymentTotal();
               that.markHasChanges();
-              setTimeout(() => that.adjustTableHeights(), 100);
-            } catch (error) {
-              console.error('行追加処理エラー:', error);
-            }
+              setTimeout(() => { that.adjustTableHeights(); }, 100);
+            } catch (error) { console.error('行追加処理エラー:', error); }
           },
           afterRemoveRow: function(index, amount) {
             that.calculatePaymentTotal();
             that.markHasChanges();
-            setTimeout(() => that.adjustTableHeights(), 100);
+            setTimeout(() => { that.adjustTableHeights(); }, 100);
           }
         });
         
-        // --- 支払情報 ---
         this.grids.expense = new Handsontable(document.getElementById('expense-grid'), {
           data: this.deepCopy(this.templates.expense),
           rowHeaders: true,
@@ -520,21 +440,16 @@
           overflow: 'visible',
           cells: (row, col) => {
             const cellProperties = {};
-            // 支払金額(5) は数値型
             if (col === 5 && row > 0) {
               cellProperties.type = 'numeric';
               cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
             }
-            // チェック列(6)と手配完了(7)はチェックボックス
             if ((col === 6 || col === 7) && row > 0 && row < that.getRowCount('expense') - 1) {
               cellProperties.type = 'checkbox';
             }
-            // 合計行は読み取り専用
             if (row === that.getRowCount('expense') - 1) {
               cellProperties.readOnly = true;
-              if (col === 0) {
-                cellProperties.className = 'total-cell';
-              }
+              if (col === 0) { cellProperties.className = 'total-cell'; }
             }
             return cellProperties;
           },
@@ -548,14 +463,11 @@
             try {
               const rowCount = this.countRows();
               const data = this.getData();
-              
-              // 合計行("B " で始まる)が最後かチェック
               if (!data[rowCount - 1][0] || !String(data[rowCount - 1][0]).startsWith('B ')) {
                 for (let i = 0; i < rowCount; i++) {
                   if (data[i][0] && String(data[i][0]).startsWith('B ')) {
                     const totalRow = data[i].slice();
                     this.alter('remove_row', i, 1);
-                    // 最後の1つ手前に挿入
                     this.alter('insert_row', rowCount - 1, 1);
                     this.setDataAtRow(rowCount - 1, totalRow);
                     break;
@@ -564,19 +476,16 @@
               }
               that.calculateExpenseTotal();
               that.markHasChanges();
-              setTimeout(() => that.adjustTableHeights(), 100);
-            } catch (error) {
-              console.error('行追加処理エラー:', error);
-            }
+              setTimeout(() => { that.adjustTableHeights(); }, 100);
+            } catch (error) { console.error('行追加処理エラー:', error); }
           },
           afterRemoveRow: function(index, amount) {
             that.calculateExpenseTotal();
             that.markHasChanges();
-            setTimeout(() => that.adjustTableHeights(), 100);
+            setTimeout(() => { that.adjustTableHeights(); }, 100);
           }
         });
         
-        // --- 収支情報 ---
         this.grids.summary = new Handsontable(document.getElementById('summary-grid'), {
           data: this.deepCopy(this.templates.summary),
           rowHeaders: false,
@@ -589,9 +498,7 @@
           overflow: 'visible',
           cells: (row, col) => {
             const cellProperties = {};
-            // (col === 1 || col === 3 || col === 5) は数値セル (ただし 報告日セル(0,1) は date)
             if (col === 1 || col === 3 || col === 5) {
-              // 報告日セルだけは日付型
               if (row === 0 && col === 1) {
                 cellProperties.type = 'date';
                 cellProperties.dateFormat = 'YYYY/MM/DD';
@@ -599,15 +506,7 @@
                 cellProperties.type = 'numeric';
                 cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
               }
-              
-              // 読み取り専用セル
-              const readOnlyCells = [
-                [0, 3], // 利益率
-                [0, 5], // 利益額
-                [1, 1], // 一人粗利
-                [1, 3], // 旅行総額/A
-                [1, 5]  // 支払総額/B
-              ];
+              const readOnlyCells = [[0,3], [0,5], [1,1], [1,3], [1,5]];
               if (readOnlyCells.some(([r,c]) => r === row && c === col)) {
                 cellProperties.readOnly = true;
               }
@@ -625,37 +524,23 @@
       
       // ========= イベントリスナー =========
       setupEventListeners: function() {
-        document.getElementById('save-btn').addEventListener('click', () => {
-          this.saveKarte();
-        });
+        document.getElementById('save-btn').addEventListener('click', () => { this.saveKarte(); });
         document.getElementById('new-btn').addEventListener('click', () => {
-          if (this.hasChanges) {
-            if (!confirm('保存されていない変更があります。新規カルテを作成しますか？')) {
-              return;
-            }
-          }
+          if (this.hasChanges && !confirm('保存されていない変更があります。新規カルテを作成しますか？')) { return; }
           this.createNew();
         });
-        document.getElementById('open-btn').addEventListener('click', () => {
-          this.loadKarteList();
-        });
-        document.getElementById('export-btn').addEventListener('click', () => {
-          this.exportToExcel();
-        });
+        document.getElementById('open-btn').addEventListener('click', () => { this.loadKarteList(); });
+        document.getElementById('export-btn').addEventListener('click', () => { this.exportToExcel(); });
         
         // 入金情報: 行を追加
         document.getElementById('add-payment-row').addEventListener('click', () => {
           const hot = this.grids.payment;
           const rowCount = hot.countRows();
           try {
-            // 最終行の下に 1 行を追加 → index = rowCount
             hot.alter('insert_row', rowCount, 1);
-            setTimeout(() => {
-              this.adjustTableHeights();
-            }, 100);
+            setTimeout(() => { this.adjustTableHeights(); }, 100);
           } catch (error) {
             console.error('行追加処理エラー:', error);
-            // 代替手段としてデータ操作
             try {
               const currentData = hot.getData();
               const totalRow = currentData[rowCount - 1].slice();
@@ -663,7 +548,7 @@
               currentData.push(Array(totalRow.length).fill(''));
               currentData.push(totalRow);
               hot.loadData(currentData);
-              setTimeout(() => this.adjustTableHeights(), 100);
+              setTimeout(() => { this.adjustTableHeights(); }, 100);
             } catch (innerError) {
               console.error('代替行追加も失敗:', innerError);
               this.showNotification('行の追加に失敗しました', 'error');
@@ -677,9 +562,7 @@
           const rowCount = hot.countRows();
           try {
             hot.alter('insert_row', rowCount, 1);
-            setTimeout(() => {
-              this.adjustTableHeights();
-            }, 100);
+            setTimeout(() => { this.adjustTableHeights(); }, 100);
           } catch (error) {
             console.error('行追加処理エラー:', error);
             try {
@@ -689,7 +572,7 @@
               currentData.push(Array(totalRow.length).fill(''));
               currentData.push(totalRow);
               hot.loadData(currentData);
-              setTimeout(() => this.adjustTableHeights(), 100);
+              setTimeout(() => { this.adjustTableHeights(); }, 100);
             } catch (innerError) {
               console.error('代替行追加も失敗:', innerError);
               this.showNotification('行の追加に失敗しました', 'error');
@@ -701,9 +584,7 @@
         document.querySelector('.close').addEventListener('click', () => {
           document.getElementById('list-modal').style.display = 'none';
         });
-        document.getElementById('search').addEventListener('input', (e) => {
-          this.filterKarteList(e.target.value);
-        });
+        document.getElementById('search').addEventListener('input', (e) => { this.filterKarteList(e.target.value); });
         window.addEventListener('click', (event) => {
           if (event.target === document.getElementById('list-modal')) {
             document.getElementById('list-modal').style.display = 'none';
@@ -725,9 +606,7 @@
         // ウィンドウリサイズで高さ再調整
         window.addEventListener('resize', () => {
           clearTimeout(this.resizeTimer);
-          this.resizeTimer = setTimeout(() => {
-            this.adjustTableHeights();
-          }, 200);
+          this.resizeTimer = setTimeout(() => { this.adjustTableHeights(); }, 200);
         });
         
         // ページ離脱前に変更がある場合は警告
@@ -739,77 +618,53 @@
           }
         });
       },
-
-      // ========= 通知を表示するメソッド（追加） =========
+      
+      // ========= 通知表示メソッド =========
       showNotification: function(message, type = 'info') {
         const notification = document.getElementById('notification');
         if (!notification) return;
-        
         notification.textContent = message;
         switch (type) {
-          case 'success':
-            notification.style.backgroundColor = '#4caf50';
-            break;
-          case 'error':
-            notification.style.backgroundColor = '#f44336';
-            break;
-          case 'warning':
-            notification.style.backgroundColor = '#ff9800';
-            break;
-          default:
-            notification.style.backgroundColor = '#2196F3';
+          case 'success': notification.style.backgroundColor = '#4caf50'; break;
+          case 'error': notification.style.backgroundColor = '#f44336'; break;
+          case 'warning': notification.style.backgroundColor = '#ff9800'; break;
+          default: notification.style.backgroundColor = '#2196F3';
         }
-        // 表示
         notification.style.display = 'block';
-        // 3秒後に消す
-        setTimeout(() => {
-          notification.style.display = 'none';
-        }, 3000);
+        setTimeout(() => { notification.style.display = 'none'; }, 3000);
       },
       
-      // ========= 新規カルテを作成 =========
+      // ========= 新規カルテ作成 =========
       createNew: function() {
         this.currentId = null;
         document.getElementById('current-karte-id').textContent = '新規カルテ';
         document.getElementById('last-saved').textContent = '-';
-        
         this.grids.basic.loadData(this.deepCopy(this.templates.basic));
         this.grids.payment.loadData(this.deepCopy(this.templates.payment));
         this.grids.expense.loadData(this.deepCopy(this.templates.expense));
         this.grids.summary.loadData(this.deepCopy(this.templates.summary));
-        
-        // 今日の日付を自動セット
         const today = new Date();
         const y = today.getFullYear();
         const m = ('0' + (today.getMonth() + 1)).slice(-2);
         const d = ('0' + today.getDate()).slice(-2);
         const formattedDate = `${y}/${m}/${d}`;
-        
-        // 報告日(summary[0,1])と、記入日(basic[0,5])にセット
         this.grids.summary.setDataAtCell(0, 1, formattedDate, 'internal');
         this.grids.basic.setDataAtCell(0, 5, formattedDate, 'internal');
-        
         this.hasChanges = false;
-        setTimeout(() => {
-          this.adjustTableHeights();
-        }, 100);
+        setTimeout(() => { this.adjustTableHeights(); }, 100);
       },
       
-      // ========= 入金合計の計算 =========
+      // ========= 入金合計計算 =========
       calculatePaymentTotal: function() {
         if (!this.grids.payment) return;
         try {
           const data = this.grids.payment.getData();
           let total = 0;
           const lastRowIndex = data.length - 1;
-          
           for (let i = 1; i < lastRowIndex; i++) {
-            const val = this.parseNumber(data[i][4]); // 入金額列
-            total += val;
+            total += this.parseNumber(data[i][4]);
           }
           this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
-          
-          // 収支情報に反映 (旅行総額/A)
           if (this.grids.summary) {
             this.grids.summary.setDataAtCell(1, 3, total, 'internal');
             this.calculateProfit();
@@ -819,21 +674,17 @@
         }
       },
       
-      // ========= 支払合計の計算 =========
+      // ========= 支払合計計算 =========
       calculateExpenseTotal: function() {
         if (!this.grids.expense) return;
         try {
           const data = this.grids.expense.getData();
           let total = 0;
           const lastRowIndex = data.length - 1;
-          
           for (let i = 1; i < lastRowIndex; i++) {
-            const val = this.parseNumber(data[i][5]); // 支払金額列
-            total += val;
+            total += this.parseNumber(data[i][5]);
           }
           this.grids.expense.setDataAtCell(lastRowIndex, 5, total, 'internal');
-          
-          // 収支情報に反映 (支払総額/B)
           if (this.grids.summary) {
             this.grids.summary.setDataAtCell(1, 5, total, 'internal');
             this.calculateProfit();
@@ -848,34 +699,23 @@
         if (!this.grids.summary) return;
         try {
           const data = this.grids.summary.getData();
-          const income = this.parseNumber(data[1][3]);   // 旅行総額/A
-          const expense = this.parseNumber(data[1][5]);  // 支払総額/B
-          
-          // 利益額
+          const income = this.parseNumber(data[1][3]);
+          const expense = this.parseNumber(data[1][5]);
           const profit = income - expense;
           this.grids.summary.setDataAtCell(0, 5, profit, 'internal');
-          
-          // 基本情報から合計人数を取得
           const basicData = this.grids.basic.getData();
           let personCount = 0;
           if (basicData && basicData[2] && basicData[2].length > 5) {
-            personCount = this.parseNumber(basicData[2][5]); // 合計人数
+            personCount = this.parseNumber(basicData[2][5]);
           }
-          // 収支情報にも人数セット
           this.grids.summary.setDataAtCell(2, 1, personCount, 'internal');
-          
-          // 利益率
           let profitRate = 0;
           if (income > 0) {
             profitRate = ((profit / income) * 100).toFixed(1) + '%';
           }
           this.grids.summary.setDataAtCell(0, 3, profitRate, 'internal');
-          
-          // 一人あたり粗利
           let profitPerPerson = 0;
-          if (personCount > 0) {
-            profitPerPerson = Math.round(profit / personCount);
-          }
+          if (personCount > 0) { profitPerPerson = Math.round(profit / personCount); }
           this.grids.summary.setDataAtCell(1, 1, profitPerPerson, 'internal');
         } catch (error) {
           console.error('利益計算エラー:', error);
@@ -889,22 +729,11 @@
           return;
         }
         document.getElementById('last-saved').textContent = '保存中...';
-        
         try {
-          const basicData = this.grids.basic
-            ? this.prepareDataForFirebase(this.grids.basic.getData())
-            : [];
-          const paymentData = this.grids.payment
-            ? this.prepareDataForFirebase(this.grids.payment.getData())
-            : [];
-          const expenseData = this.grids.expense
-            ? this.prepareDataForFirebase(this.grids.expense.getData())
-            : [];
-          const summaryData = this.grids.summary
-            ? this.prepareDataForFirebase(this.grids.summary.getData())
-            : [];
-          
-          // Firestore へ書き込むオブジェクト
+          const basicData = this.grids.basic ? this.prepareDataForFirebase(this.grids.basic.getData()) : [];
+          const paymentData = this.grids.payment ? this.prepareDataForFirebase(this.grids.payment.getData()) : [];
+          const expenseData = this.grids.expense ? this.prepareDataForFirebase(this.grids.expense.getData()) : [];
+          const summaryData = this.grids.summary ? this.prepareDataForFirebase(this.grids.summary.getData()) : [];
           const karteData = {
             basicData,
             paymentData,
@@ -912,38 +741,26 @@
             summaryData,
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
           };
-          
-          // カルテの表示用情報（No,団体名など）
           const karteInfo = this.extractKarteInfo(basicData);
           karteData.karteInfo = karteInfo;
-          
           let savePromise;
           if (this.currentId) {
-            // 既存IDがある→更新
             savePromise = db.collection('karte').doc(this.currentId).update(karteData);
           } else {
-            // 新規作成
-            savePromise = db.collection('karte')
-              .add(karteData)
-              .then(docRef => {
-                this.currentId = docRef.id;
-                return docRef;
-              });
+            savePromise = db.collection('karte').add(karteData)
+              .then(docRef => { this.currentId = docRef.id; return docRef; });
           }
-          
-          savePromise
-            .then(() => {
-              const now = new Date();
-              document.getElementById('last-saved').textContent = now.toLocaleString();
-              document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
-              this.hasChanges = false;
-              this.showNotification('カルテを保存しました', 'success');
-            })
-            .catch(error => {
-              console.error('保存エラー:', error);
-              document.getElementById('last-saved').textContent = '保存失敗';
-              this.showNotification('保存に失敗しました: ' + error.message, 'error');
-            });
+          savePromise.then(() => {
+            const now = new Date();
+            document.getElementById('last-saved').textContent = now.toLocaleString();
+            document.getElementById('current-karte-id').textContent = karteInfo.karteNo || this.currentId;
+            this.hasChanges = false;
+            this.showNotification('カルテを保存しました', 'success');
+          }).catch(error => {
+            console.error('保存エラー:', error);
+            document.getElementById('last-saved').textContent = '保存失敗';
+            this.showNotification('保存に失敗しました: ' + error.message, 'error');
+          });
         } catch (error) {
           console.error('データ準備エラー:', error);
           document.getElementById('last-saved').textContent = '保存失敗';
@@ -951,92 +768,52 @@
         }
       },
       
-      // ========= Firestore向けに二重配列を変換 =========
+      // ========= Firestore向けデータ変換 =========
       prepareDataForFirebase: function(data) {
-        if (!data || !Array.isArray(data)) {
-          return [];
-        }
+        if (!data || !Array.isArray(data)) { return []; }
         const processedData = JSON.parse(JSON.stringify(data));
         return processedData.map(row => {
           if (!Array.isArray(row)) return [];
-          return row.map(cell => {
-            return this.cleanCellValue(cell);
-          });
+          return row.map(cell => { return this.cleanCellValue(cell); });
         });
       },
       
       // ========= セル値の正規化 =========
       cleanCellValue: function(cell) {
-        if (cell === undefined || cell === null) {
-          return '';
-        }
-        if (typeof cell === 'number' && isNaN(cell)) {
-          return 0;
-        }
-        if (cell instanceof Date) {
-          return cell.toISOString();
-        }
-        if (typeof cell === 'object') {
-          return JSON.stringify(cell);
-        }
+        if (cell === undefined || cell === null) { return ''; }
+        if (typeof cell === 'number' && isNaN(cell)) { return 0; }
+        if (cell instanceof Date) { return cell.toISOString(); }
+        if (typeof cell === 'object') { return JSON.stringify(cell); }
         return cell;
       },
       
-      // ========= 基本情報から カルテNo や団体名などを抽出 =========
+      // ========= 基本情報抽出 =========
       extractKarteInfo: function(basicData) {
         const karteInfo = {};
         try {
           if (basicData && basicData.length >= 6) {
-            if (basicData[0] && basicData[0].length >= 2) {
-              karteInfo.karteNo = basicData[0][1] || '';
-            }
-            if (basicData[1] && basicData[1].length >= 2) {
-              karteInfo.tantosha = basicData[1][1] || '';
-            }
-            if (basicData[0] && basicData[0].length >= 4) {
-              karteInfo.companyTantosha = basicData[0][3] || '';
-            }
-            if (basicData[1] && basicData[1].length >= 4) {
-              karteInfo.dantaiName = basicData[1][3] || '';
-            }
-            if (basicData[1] && basicData[1].length >= 6) {
-              karteInfo.phoneNumber = basicData[1][5] || '';
-            }
-            if (basicData[2] && basicData[2].length >= 2) {
-              karteInfo.stayDate = basicData[2][1] || '';
-            }
-            if (basicData[2] && basicData[2].length >= 4) {
-              karteInfo.nights = basicData[2][3] || '';
-            }
-            if (basicData[2] && basicData[2].length >= 6) {
-              karteInfo.personCount = basicData[2][5] || '';
-            }
-            if (basicData[5] && basicData[5].length >= 2) {
-              karteInfo.departure = basicData[5][1] || '';
-            }
-            if (basicData[5] && basicData[5].length >= 4) {
-              karteInfo.destination = basicData[5][3] || '';
-            }
+            if (basicData[0] && basicData[0].length >= 2) { karteInfo.karteNo = basicData[0][1] || ''; }
+            if (basicData[1] && basicData[1].length >= 2) { karteInfo.tantosha = basicData[1][1] || ''; }
+            if (basicData[0] && basicData[0].length >= 4) { karteInfo.companyTantosha = basicData[0][3] || ''; }
+            if (basicData[1] && basicData[1].length >= 4) { karteInfo.dantaiName = basicData[1][3] || ''; }
+            if (basicData[1] && basicData[1].length >= 6) { karteInfo.phoneNumber = basicData[1][5] || ''; }
+            if (basicData[2] && basicData[2].length >= 2) { karteInfo.stayDate = basicData[2][1] || ''; }
+            if (basicData[2] && basicData[2].length >= 4) { karteInfo.nights = basicData[2][3] || ''; }
+            if (basicData[2] && basicData[2].length >= 6) { karteInfo.personCount = basicData[2][5] || ''; }
+            if (basicData[5] && basicData[5].length >= 2) { karteInfo.departure = basicData[5][1] || ''; }
+            if (basicData[5] && basicData[5].length >= 4) { karteInfo.destination = basicData[5][3] || ''; }
           }
-        } catch (e) {
-          console.error('カルテ情報抽出エラー:', e);
-        }
+        } catch (e) { console.error('カルテ情報抽出エラー:', e); }
         return karteInfo;
       },
       
-      // ========= カルテ一覧の読み込み =========
+      // ========= カルテ一覧読み込み =========
       loadKarteList: function() {
-        if (this.hasChanges) {
-          if (!confirm('保存されていない変更があります。カルテ一覧を開きますか？')) {
-            return;
-          }
-        }
-        
+        if (this.hasChanges && !confirm('保存されていない変更があります。カルテ一覧を開きますか？')) { return; }
         const listBody = document.querySelector('#karte-list tbody');
         listBody.innerHTML = '<tr><td colspan="7">読み込み中...</td></tr>';
         document.getElementById('list-modal').style.display = 'block';
         document.getElementById('search').value = '';
-        
         db.collection('karte').orderBy('lastUpdated', 'desc').limit(50).get()
           .then(querySnapshot => {
             if (querySnapshot.empty) {
@@ -1063,8 +840,6 @@
               `;
             });
             listBody.innerHTML = html;
-            
-            // 編集ボタン
             document.querySelectorAll('.edit-btn').forEach(btn => {
               btn.addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
@@ -1072,13 +847,10 @@
                 document.getElementById('list-modal').style.display = 'none';
               });
             });
-            // 削除ボタン
             document.querySelectorAll('.delete-btn').forEach(btn => {
               btn.addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
-                if (confirm('本当に削除しますか？')) {
-                  this.deleteKarte(id);
-                }
+                if (confirm('本当に削除しますか？')) { this.deleteKarte(id); }
               });
             });
           })
@@ -1091,14 +863,8 @@
       
       // ========= カルテ読み込み =========
       loadKarte: function(id) {
-        if (this.hasChanges) {
-          if (!confirm('保存されていない変更があります。別のカルテを開きますか？')) {
-            return;
-          }
-        }
-        
+        if (this.hasChanges && !confirm('保存されていない変更があります。別のカルテを開きますか？')) { return; }
         document.getElementById('last-saved').textContent = '読み込み中...';
-        
         db.collection('karte').doc(id).get()
           .then(doc => {
             if (!doc.exists) {
@@ -1106,29 +872,18 @@
               document.getElementById('last-saved').textContent = '-';
               return;
             }
-            
             const data = doc.data();
             if (data.basicData)   this.grids.basic.loadData(data.basicData);
             if (data.paymentData) this.grids.payment.loadData(data.paymentData);
             if (data.expenseData) this.grids.expense.loadData(data.expenseData);
             if (data.summaryData) this.grids.summary.loadData(data.summaryData);
-            
             this.currentId = id;
             const karteInfo = data.karteInfo || {};
             document.getElementById('current-karte-id').textContent = karteInfo.karteNo || id;
-            
-            if (data.lastUpdated) {
-              document.getElementById('last-saved').textContent =
-                data.lastUpdated.toDate().toLocaleString();
-            } else {
-              document.getElementById('last-saved').textContent = '-';
-            }
-            
+            document.getElementById('last-saved').textContent =
+              data.lastUpdated ? data.lastUpdated.toDate().toLocaleString() : '-';
             this.hasChanges = false;
-            setTimeout(() => {
-              this.adjustTableHeights();
-            }, 100);
-            
+            setTimeout(() => { this.adjustTableHeights(); }, 100);
             this.showNotification('カルテを読み込みました', 'success');
           })
           .catch(error => {
@@ -1144,10 +899,7 @@
           .then(() => {
             this.showNotification('カルテを削除しました', 'success');
             this.loadKarteList();
-            // 削除したカルテが表示中だった場合は新規作成
-            if (this.currentId === id) {
-              this.createNew();
-            }
+            if (this.currentId === id) { this.createNew(); }
           })
           .catch(error => {
             console.error('削除エラー:', error);
@@ -1163,12 +915,10 @@
           const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
           const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
           const summaryWs = XLSX.utils.aoa_to_sheet(this.grids.summary.getData());
-          
           XLSX.utils.book_append_sheet(wb, basicWs, '基本情報');
           XLSX.utils.book_append_sheet(wb, paymentWs, '入金情報');
           XLSX.utils.book_append_sheet(wb, expenseWs, '支払情報');
           XLSX.utils.book_append_sheet(wb, summaryWs, '収支情報');
-          
           const basicData = this.grids.basic.getData();
           let karteNo = '';
           if (basicData && basicData.length > 0 && basicData[0].length > 1) {
@@ -1179,7 +929,6 @@
           const m = ('0' + (now.getMonth() + 1)).slice(-2);
           const d = ('0' + now.getDate()).slice(-2);
           const filename = `${karteNo || 'カルテ'}_${y}${m}${d}.xlsx`;
-          
           XLSX.writeFile(wb, filename);
           this.showNotification('Excelファイルを出力しました', 'success');
         } catch (error) {
@@ -1188,31 +937,25 @@
         }
       },
       
-      // ========= カルテ一覧の検索フィルタ =========
+      // ========= カルテ一覧検索フィルタ =========
       filterKarteList: function(searchText) {
         const rows = document.querySelectorAll('#karte-list tbody tr');
         searchText = searchText.toLowerCase();
         let foundCount = 0;
-        
         rows.forEach(row => {
-          if (row.querySelector('td[colspan]')) {
-            return; // "読み込み中"などの行はスキップ
-          }
+          if (row.querySelector('td[colspan]')) { return; }
           let found = false;
           const cells = row.querySelectorAll('td:not(:last-child)');
           cells.forEach(cell => {
-            if (cell.textContent.toLowerCase().includes(searchText)) {
-              found = true;
-            }
+            if (cell.textContent.toLowerCase().includes(searchText)) { found = true; }
           });
           row.style.display = found ? '' : 'none';
-          if (found) foundCount++;
+          if (found) { foundCount++; }
         });
-        
         if (foundCount === 0 && searchText) {
           const listBody = document.querySelector('#karte-list tbody');
           const noResultRow = document.getElementById('no-results-row');
-          if (noResultRow) noResultRow.remove();
+          if (noResultRow) { noResultRow.remove(); }
           if (rows.length > 0) {
             const message = document.createElement('tr');
             message.id = 'no-results-row';
@@ -1221,30 +964,21 @@
           }
         } else {
           const noResultRow = document.getElementById('no-results-row');
-          if (noResultRow) noResultRow.remove();
+          if (noResultRow) { noResultRow.remove(); }
         }
       },
       
       // ========= ユーティリティ =========
-      markHasChanges: function() {
-        this.hasChanges = true;
-      },
-      getRowCount: function(gridName) {
-        if (!this.grids[gridName]) return 0;
-        return this.grids[gridName].countRows();
-      },
+      markHasChanges: function() { this.hasChanges = true; },
+      getRowCount: function(gridName) { return this.grids[gridName] ? this.grids[gridName].countRows() : 0; },
       parseNumber: function(value) {
-        if (value === null || value === undefined || value === '') return 0;
-        if (typeof value === 'number') {
-          return isNaN(value) ? 0 : value;
-        }
+        if (value === null || value === undefined || value === '') { return 0; }
+        if (typeof value === 'number') { return isNaN(value) ? 0 : value; }
         const cleanValue = String(value).replace(/[^\d.-]/g, '');
         const number = parseFloat(cleanValue);
         return isNaN(number) ? 0 : number;
       },
-      deepCopy: function(obj) {
-        return JSON.parse(JSON.stringify(obj));
-      },
+      deepCopy: function(obj) { return JSON.parse(JSON.stringify(obj)); },
       adjustTableHeights: function() {
         ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
           const grid = this.grids[gridName];
@@ -1256,13 +990,11 @@
                 const tableHeight = table.offsetHeight;
                 grid.rootElement.style.height = tableHeight + 'px';
                 const container = grid.rootElement.closest('.grid-container');
-                if (container) {
-                  container.style.height = 'auto';
-                }
+                if (container) { container.style.height = 'auto'; }
                 const wtHolder = grid.rootElement.querySelector('.wtHolder');
-                if (wtHolder) wtHolder.style.height = 'auto';
+                if (wtHolder) { wtHolder.style.height = 'auto'; }
                 const wtSpreader = grid.rootElement.querySelector('.wtSpreader');
-                if (wtSpreader) wtSpreader.style.height = 'auto';
+                if (wtSpreader) { wtSpreader.style.height = 'auto'; }
               }
             } catch (e) {
               console.error(`${gridName}の高さ調整エラー:`, e);
@@ -1272,10 +1004,7 @@
       }
     };
 
-    // DOM読み込み後に初期化
-    document.addEventListener('DOMContentLoaded', () => {
-      KarteApp.init();
-    });
+    document.addEventListener('DOMContentLoaded', () => { KarteApp.init(); });
   </script>
 </body>
 </html>
