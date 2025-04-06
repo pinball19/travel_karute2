@@ -65,34 +65,143 @@
       font-size: 16px;
       color: white;
     }
-    .grid-container {
-      height: auto;
-      overflow: visible;
+    
+    /* 新しいフォームスタイル */
+    .form-section {
+      padding: 15px;
     }
-    footer {
-      margin-top: 30px;
-      padding-top: 15px;
-      border-top: 1px solid #ddd;
+    .form-row {
+      margin-bottom: 15px;
       display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: #666;
+      flex-wrap: wrap;
+      align-items: center;
     }
+    .form-label {
+      width: 200px;
+      font-weight: bold;
+      padding-right: 15px;
+    }
+    .form-field {
+      flex: 1;
+      min-width: 250px;
+    }
+    .form-field input, 
+    .form-field select, 
+    .form-field textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .form-field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* セクションの色分け */
     .basic-section .section-header { background-color: #4472c4; }
     .payment-section .section-header { background-color: #70ad47; }
     .expense-section .section-header { background-color: #ed7d31; }
     .summary-section .section-header { background-color: #7030a0; }
-    .add-row-btn {
-      margin: 5px 10px 10px 0;
+    .memo-section .section-header { background-color: #5b9bd5; }
+    .comments-section .section-header { background-color: #4bacc6; }
+    
+    /* 追加ボタン */
+    .add-item-btn {
+      margin: 5px 0 15px 0;
       padding: 5px 10px;
       background-color: #4caf50;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      float: right;
+      display: block;
     }
-    .add-row-btn:hover { background-color: #45a049; }
+    .add-item-btn:hover { background-color: #45a049; }
+    
+    /* 情報カード（入金/支払情報用） */
+    .info-card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+      position: relative;
+    }
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .info-card-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .info-card-item {
+      flex: 1;
+      min-width: 120px;
+    }
+    .info-card-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 2px;
+    }
+    .info-card-value {
+      font-size: 14px;
+    }
+    .remove-card-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .remove-card-btn:hover {
+      background-color: #d32f2f;
+    }
+    
+    /* コメント欄 */
+    .comment-input {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    .comment-input textarea {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-height: 60px;
+      margin-right: 10px;
+    }
+    .comment-input button {
+      align-self: flex-end;
+    }
+    .comment-thread {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .comment-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 10px;
+    }
+    .comment-meta {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .comment-text {
+      margin-left: 10px;
+    }
+    
+    /* モーダル */
     .modal {
       display: none;
       position: fixed;
@@ -133,21 +242,8 @@
       z-index: 9999;
       display: none;
     }
-    .handsontable .wtHolder,
-    .handsontable .ht_master .wtHolder,
-    .handsontable .wtHider {
-      overflow: visible !important;
-      height: auto !important;
-    }
-    .handsontable { height: auto !important; }
-    .handsontable .htCore { height: auto !important; }
-    .handsontable ::-webkit-scrollbar { display: none !important; }
-    .handsontable {
-      -ms-overflow-style: none !important;
-      scrollbar-width: none !important;
-    }
-    .handsontable .wtSpreader { height: auto !important; width: auto !important; }
-    .ht_clone_top { z-index: 101 !important; }
+    
+    /* カルテ一覧 */
     #karte-list {
       width: 100%;
       border-collapse: collapse;
@@ -177,6 +273,16 @@
     }
     .delete-btn { background-color: #f44336; }
     .delete-btn:hover { background-color: #d32f2f; }
+    
+    footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #666;
+    }
 
     /* スマホ向けレスポンシブ調整 */
     @media (max-width: 768px) {
@@ -192,8 +298,12 @@
       .action-buttons button {
         margin-bottom: 10px;
       }
-      .grid-container {
-        overflow-x: auto !important;
+      .form-label {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      .form-field {
+        width: 100%;
       }
       #karte-list th, #karte-list td {
         font-size: 14px;
@@ -203,6 +313,9 @@
       .app-title h1 { font-size: 20px; }
       .app-info { font-size: 12px; }
       button { font-size: 14px; padding: 6px 12px; }
+      .info-card-body {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -211,7 +324,6 @@
     <header>
       <div class="app-title"><h1>団体ナビ成約カルテ</h1></div>
       <div class="app-info">
-        <!-- 表示を「カルテNo」に統一 -->
         <div>カルテNo: <span id="current-karte-id">新規カルテ</span></div>
         <div>最終更新: <span id="last-saved">-</span></div>
       </div>
@@ -223,31 +335,266 @@
       <button id="export-btn">エクスポート</button>
     </div>
     <main>
-      <div class="section-container basic-section" id="basic-section">
+      <!-- 基本情報セクション -->
+      <div class="section-container basic-section">
         <div class="section-header">◆ 基本情報</div>
-        <div id="basic-grid" class="grid-container"></div>
+        <div class="form-section">
+          <div class="form-row">
+            <div class="form-label">国内/海外</div>
+            <div class="form-field">
+              <select id="travel-type">
+                <option value="domestic">国内</option>
+                <option value="international">海外</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">カルテ番号</div>
+            <div class="form-field">
+              <input type="text" id="karte-no" placeholder="カルテ番号（国内はD、海外はIから始まる）">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">自社担当者</div>
+            <div class="form-field">
+              <input type="text" id="company-person" placeholder="自社担当者名">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">クライアント会社名</div>
+            <div class="form-field">
+              <input type="text" id="client-company" placeholder="クライアント会社名">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">クライアント担当者</div>
+            <div class="form-field">
+              <input type="text" id="client-person" placeholder="担当者名">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">電話番号</div>
+            <div class="form-field">
+              <input type="tel" id="client-phone" placeholder="電話番号">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">メールアドレス</div>
+            <div class="form-field">
+              <input type="email" id="client-email" placeholder="メールアドレス">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">出発日</div>
+            <div class="form-field">
+              <input type="date" id="departure-date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">帰着日</div>
+            <div class="form-field">
+              <input type="date" id="return-date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">泊数</div>
+            <div class="form-field">
+              <input type="number" id="nights" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">出発地</div>
+            <div class="form-field">
+              <input type="text" id="departure-place" placeholder="出発地">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">行き先</div>
+            <div class="form-field">
+              <select id="destination">
+                <option value="">選択してください</option>
+                <option value="北海道">北海道</option>
+                <option value="青森県">青森県</option>
+                <option value="岩手県">岩手県</option>
+                <option value="宮城県">宮城県</option>
+                <option value="秋田県">秋田県</option>
+                <option value="山形県">山形県</option>
+                <option value="福島県">福島県</option>
+                <option value="茨城県">茨城県</option>
+                <option value="栃木県">栃木県</option>
+                <option value="群馬県">群馬県</option>
+                <option value="埼玉県">埼玉県</option>
+                <option value="千葉県">千葉県</option>
+                <option value="東京都">東京都</option>
+                <option value="神奈川県">神奈川県</option>
+                <option value="新潟県">新潟県</option>
+                <option value="富山県">富山県</option>
+                <option value="石川県">石川県</option>
+                <option value="福井県">福井県</option>
+                <option value="山梨県">山梨県</option>
+                <option value="長野県">長野県</option>
+                <option value="岐阜県">岐阜県</option>
+                <option value="静岡県">静岡県</option>
+                <option value="愛知県">愛知県</option>
+                <option value="三重県">三重県</option>
+                <option value="滋賀県">滋賀県</option>
+                <option value="京都府">京都府</option>
+                <option value="大阪府">大阪府</option>
+                <option value="兵庫県">兵庫県</option>
+                <option value="奈良県">奈良県</option>
+                <option value="和歌山県">和歌山県</option>
+                <option value="鳥取県">鳥取県</option>
+                <option value="島根県">島根県</option>
+                <option value="岡山県">岡山県</option>
+                <option value="広島県">広島県</option>
+                <option value="山口県">山口県</option>
+                <option value="徳島県">徳島県</option>
+                <option value="香川県">香川県</option>
+                <option value="愛媛県">愛媛県</option>
+                <option value="高知県">高知県</option>
+                <option value="福岡県">福岡県</option>
+                <option value="佐賀県">佐賀県</option>
+                <option value="長崎県">長崎県</option>
+                <option value="熊本県">熊本県</option>
+                <option value="大分県">大分県</option>
+                <option value="宮崎県">宮崎県</option>
+                <option value="鹿児島県">鹿児島県</option>
+                <option value="沖縄県">沖縄県</option>
+                <option value="other">その他（海外など）</option>
+              </select>
+              <input type="text" id="destination-other" placeholder="その他の行き先" style="display: none; margin-top: 5px;">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">旅行内容</div>
+            <div class="form-field">
+              <textarea id="travel-content" placeholder="旅行内容の詳細"></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">合計人数</div>
+            <div class="form-field">
+              <input type="number" id="total-persons" placeholder="合計人数">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">金額</div>
+            <div class="form-field">
+              <input type="number" id="total-amount" placeholder="旅行総額">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">単価</div>
+            <div class="form-field">
+              <input type="number" id="unit-price" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">支払い先</div>
+            <div class="form-field">
+              <input type="text" id="payment-to" placeholder="支払い先">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">手配状況</div>
+            <div class="form-field">
+              <select id="arrangement-status">
+                <option value="not-started">未着手</option>
+                <option value="in-progress">手配中</option>
+                <option value="completed">手配完了</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="section-container payment-section" id="payment-section">
+      <!-- 入金情報セクション -->
+      <div class="section-container payment-section">
         <div class="section-header">◆ 入金情報</div>
-        <div id="payment-grid" class="grid-container"></div>
-        <button id="add-payment-row" class="add-row-btn">行を追加</button>
+        <div class="form-section">
+          <div id="payment-list">
+            <!-- 入金情報カードがここに動的に追加されます -->
+          </div>
+          <button id="add-payment" class="add-item-btn">入金情報を追加</button>
+        </div>
       </div>
-      <div class="section-container expense-section" id="expense-section">
+
+      <!-- 支払情報セクション -->
+      <div class="section-container expense-section">
         <div class="section-header">◆ 支払情報</div>
-        <div id="expense-grid" class="grid-container"></div>
-        <button id="add-expense-row" class="add-row-btn">行を追加</button>
+        <div class="form-section">
+          <div id="expense-list">
+            <!-- 支払情報カードがここに動的に追加されます -->
+          </div>
+          <button id="add-expense" class="add-item-btn">支払情報を追加</button>
+        </div>
       </div>
-      <div class="section-container summary-section" id="summary-section">
+
+      <!-- 収支情報セクション -->
+      <div class="section-container summary-section">
         <div class="section-header">◆ 収支情報</div>
-        <div id="summary-grid" class="grid-container"></div>
+        <div class="form-section">
+          <div class="form-row">
+            <div class="form-label">総入金額</div>
+            <div class="form-field">
+              <input type="text" id="total-payment" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">総支払額</div>
+            <div class="form-field">
+              <input type="text" id="total-expense" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">利益額</div>
+            <div class="form-field">
+              <input type="text" id="profit-amount" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">利益率</div>
+            <div class="form-field">
+              <input type="text" id="profit-rate" readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">一人あたり利益</div>
+            <div class="form-field">
+              <input type="text" id="profit-per-person" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- メモ欄セクション -->
+      <div class="section-container memo-section">
+        <div class="section-header">◆ メモ欄</div>
+        <div class="form-section">
+          <textarea id="memo" placeholder="自由にメモを記入してください" rows="5" style="width: 100%;"></textarea>
+        </div>
+      </div>
+
+      <!-- コメントセクション -->
+      <div class="section-container comments-section">
+        <div class="section-header">◆ コメント欄</div>
+        <div class="form-section">
+          <div class="comment-input">
+            <textarea id="comment-text" placeholder="コメントを入力してください"></textarea>
+            <button id="post-comment">投稿</button>
+          </div>
+          <div id="comment-thread" class="comment-thread">
+            <!-- コメントがここに動的に追加されます -->
+          </div>
+        </div>
       </div>
     </main>
     <footer>
-      <div>カルテシステム v1.0</div>
+      <div>カルテシステム v2.0</div>
       <div>接続状態: <span id="connection-status">オンライン</span></div>
     </footer>
   </div>
-  <!-- カルテ一覧画面 -->
+
+  <!-- カルテ一覧モーダル -->
   <div id="list-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -260,10 +607,9 @@
         <thead>
           <tr>
             <th>カルテNo</th>
-            <th>お客様担当者</th>
-            <th>団体名</th>
-            <th>宿泊日</th>
-            <th>人数</th>
+            <th>担当者</th>
+            <th>会社名</th>
+            <th>出発日</th>
             <th>行先</th>
             <th>操作</th>
           </tr>
@@ -272,8 +618,117 @@
       </table>
     </div>
   </div>
+
+  <!-- 入金情報追加モーダル -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>入金情報の追加</h2>
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-label">入金予定日</div>
+          <div class="form-field">
+            <input type="date" id="payment-due-date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">入金日</div>
+          <div class="form-field">
+            <input type="date" id="payment-date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">入金額</div>
+          <div class="form-field">
+            <input type="number" id="payment-amount" placeholder="入金額">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">入金場所</div>
+          <div class="form-field">
+            <input type="text" id="payment-place" placeholder="入金場所">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">備考</div>
+          <div class="form-field">
+            <textarea id="payment-notes" placeholder="備考"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <button id="save-payment" style="margin-left: auto;">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 支払情報追加モーダル -->
+  <div id="expense-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>支払情報の追加</h2>
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-label">利用日</div>
+          <div class="form-field">
+            <input type="date" id="expense-date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">手配先名</div>
+          <div class="form-field">
+            <input type="text" id="expense-vendor" placeholder="手配先名">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">電話/FAX</div>
+          <div class="form-field">
+            <input type="text" id="expense-phone" placeholder="電話/FAX番号">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">担当者</div>
+          <div class="form-field">
+            <input type="text" id="expense-person" placeholder="担当者名">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">支払予定日</div>
+          <div class="form-field">
+            <input type="date" id="expense-due-date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">支払金額</div>
+          <div class="form-field">
+            <input type="number" id="expense-amount" placeholder="支払金額">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">手配状況</div>
+          <div class="form-field">
+            <select id="expense-status">
+              <option value="未手配">未手配</option>
+              <option value="手配中">手配中</option>
+              <option value="手配完了">手配完了</option>
+              <option value="支払済み">支払済み</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">備考</div>
+          <div class="form-field">
+            <textarea id="expense-notes" placeholder="備考"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <button id="save-expense" style="margin-left: auto;">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="notification" class="notification"></div>
-  <script src="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -301,295 +756,27 @@
     const KarteApp = {
       currentId: null,
       hasChanges: false,
-      // dataModel を導入（入金合計、支払合計、人数）
-      dataModel: {
-        paymentTotal: 0,
-        expenseTotal: 0,
-        personCount: 0
-      },
+      payments: [], // 入金情報の配列
+      expenses: [], // 支払情報の配列
+      comments: [], // コメントの配列
       debounceTimer: null, // debounce 用タイマー
-      grids: { basic: null, payment: null, expense: null, summary: null },
-      // summary テンプレートは2行×8列（行0：ラベル、行1：計算結果）
-      templates: {
-        basic: [
-          ['カルテNo', '', '自社担当者', '', '記入日', '', '個人通No', ''],
-          ['お客様担当者', '', '団体名', '', 'お客様電話番号', ''],
-          ['宿泊日', '', '泊数', '', '合計人数', ''],
-          ['大人男性', '', '大人女性', '', '子供(小学生)', '', '幼児', ''],
-          ['成約日', '', '利用年度', '', '', ''],
-          ['出発地', '', '行先', '', '', '']
-        ],
-        payment: [
-          ['入金予定日', '入金場所', '入金予定額', '入金日', '入金額', '備考', 'チェック'],
-          ['', '', '', '', '', '', ''],
-          ['', '', '', '', '', '', ''],
-          ['A 入金合計', '', '', '', 0, '', '']
-        ],
-        expense: [
-          ['利用日', '手配先名（該当に〇を付ける）', '電話/FAX', '担当者', '支払予定日', '支払金額', 'チェック', '手配完了'],
-          ['', '', '', '', '', '', '', ''],
-          ['', '', '', '', '', '', '', ''],
-          ['B 支払合計', '', '', '', '', 0, '', '']
-        ],
-        summary: [
-          // 行0: ラベル行（変更なし）
-          ["報告日", "利益率", "利益額", "一人粗利", "旅行総額/A", "支払総額/B", "人数", "特補人数"],
-          // 行1: 計算結果を表示するための行
-          ["", "", "", "", "", "", "", ""]
-        ]
-      },
       
       init: function() {
         console.log("KarteApp.init() start");
-        this.initGrids();
         this.setupEventListeners();
-        // 初回表示時にカルテ一覧を表示する
-        this.loadKarteList();
+        this.createNew();
         // スマホの場合のみモーダルを自動表示、PCの場合は非表示
         if (/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
           document.getElementById('list-modal').style.display = 'block';
         } else {
           document.getElementById('list-modal').style.display = 'none';
         }
-        setTimeout(() => { this.adjustTableHeights(); }, 500);
         console.log("KarteApp.init() end");
-      },
-      
-      // 共通のデータモデルに基づいて Summary グリッドを更新する関数
-      updateSummaryFromDataModel: function() {
-        try {
-          const travelTotal = this.dataModel.paymentTotal || 0;
-          const expenseTotal = this.dataModel.expenseTotal || 0;
-          // 基本情報グリッドから人数を取得
-          const basicData = this.grids.basic.getData();
-          let personCount = 0;
-          if (basicData && basicData.length >= 3 && basicData[2].length >= 6) {
-            personCount = this.parseNumber(basicData[2][5]);
-            this.dataModel.personCount = personCount;
-          }
-          const profit = travelTotal - expenseTotal;
-          const profitRate = travelTotal > 0 ? (profit / travelTotal * 100).toFixed(1) + '%' : '0%';
-          const profitPerPerson = personCount > 0 ? Math.round(profit / personCount) : 0;
-          // Summary グリッドの各セルを更新
-          this.grids.summary.setDataAtCell(1, 1, profitRate, 'internal');
-          this.grids.summary.setDataAtCell(1, 2, profit, 'internal');
-          this.grids.summary.setDataAtCell(1, 3, profitPerPerson, 'internal');
-          this.grids.summary.setDataAtCell(1, 6, personCount, 'internal');
-          console.log("updateSummaryFromDataModel: travelTotal=", travelTotal, " expenseTotal=", expenseTotal, " profit=", profit, " profitRate=", profitRate, " personCount=", personCount, " profitPerPerson=", profitPerPerson);
-        } catch (error) {
-          console.error('Summary更新エラー:', error);
-        }
-      },
-      
-      // debounce 用：短い遅延後に updateSummaryFromDataModel() を実行
-      debouncedUpdateSummary: function() {
-        clearTimeout(this.debounceTimer);
-        this.debounceTimer = setTimeout(() => {
-          this.updateSummaryFromDataModel();
-        }, 300);
-      },
-      
-      initGrids: function() {
-        const that = this;
-        console.log("initGrids() start");
-        // 基本情報グリッド
-        this.grids.basic = new Handsontable(document.getElementById('basic-grid'), {
-          data: this.deepCopy(this.templates.basic),
-          rowHeaders: false,
-          colHeaders: false,
-          height: 'auto',
-          stretchH: 'all',
-          minCols: 8,
-          licenseKey: 'non-commercial-and-evaluation',
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
-          afterRender: function() {
-            try {
-              const tableHeight = this.rootElement.querySelector('.htCore').offsetHeight;
-              this.rootElement.style.height = tableHeight + 'px';
-              console.log("基本グリッド afterRender: tableHeight=", tableHeight);
-            } catch (e) { console.warn('基本グリッド 高さ調整エラー:', e); }
-          },
-          afterChange: (changes, source) => { 
-            if (source === 'edit' || source === 'paste') {
-              setTimeout(() => { that.markHasChanges(); that.debouncedUpdateSummary(); }, 0);
-            }
-          }
-        });
-        
-        // 入金情報グリッド
-        this.grids.payment = new Handsontable(document.getElementById('payment-grid'), {
-          data: this.deepCopy(this.templates.payment),
-          rowHeaders: true,
-          colHeaders: false,
-          height: 'auto',
-          stretchH: 'all',
-          minRows: 4,
-          contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
-          licenseKey: 'non-commercial-and-evaluation',
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
-          cells: (row, col) => {
-            const cellProperties = {};
-            if ((col === 2 || col === 4) && row > 0) {
-              cellProperties.type = 'numeric';
-              cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
-            }
-            if (col === 6 && row > 0 && row < that.getRowCount('payment') - 1) {
-              cellProperties.type = 'checkbox';
-            }
-            if (row === that.getRowCount('payment') - 1) {
-              cellProperties.readOnly = true;
-              if (col === 0) { cellProperties.className = 'total-cell'; }
-            }
-            return cellProperties;
-          },
-          afterChange: (changes, source) => {
-            if (source === 'edit' || source === 'paste') {
-              console.log("入金グリッド afterChange:", changes);
-              // 合計セルの変更があれば即時転送
-              setTimeout(() => {
-                that.calculatePaymentTotal();
-                that.markHasChanges();
-              }, 0);
-            }
-          },
-          afterCreateRow: function(index, amount, source) {
-            try {
-              const rowCount = this.countRows();
-              const data = this.getData();
-              console.log("入金グリッド afterCreateRow: index=", index, " amount=", amount, " rowCount=", rowCount);
-              if (!data[rowCount - 1][0] || !String(data[rowCount - 1][0]).startsWith('A ')) {
-                for (let i = 0; i < rowCount; i++) {
-                  if (data[i][0] && String(data[i][0]).startsWith('A ')) {
-                    const totalRow = data[i].slice();
-                    console.log("入金グリッド: 合計行発見 at row", i);
-                    this.alter('remove_row', i, 1);
-                    console.log("入金グリッド: remove_row", i);
-                    this.alter('insert_row', rowCount, 1);
-                    console.log("入金グリッド: insert_row at index", rowCount);
-                    this.setDataAtRow(rowCount, totalRow);
-                    break;
-                  }
-                }
-              }
-              that.calculatePaymentTotal();
-              that.markHasChanges();
-              setTimeout(() => { that.adjustTableHeights(); }, 100);
-            } catch (error) { console.error('入金グリッド 行追加処理エラー:', error); }
-          },
-          afterRemoveRow: function(index, amount) {
-            console.log("入金グリッド afterRemoveRow: index=", index, " amount=", amount);
-            that.calculatePaymentTotal();
-            that.markHasChanges();
-            setTimeout(() => { that.adjustTableHeights(); }, 100);
-          }
-        });
-        
-        // 支払情報グリッド
-        this.grids.expense = new Handsontable(document.getElementById('expense-grid'), {
-          data: this.deepCopy(this.templates.expense),
-          rowHeaders: true,
-          colHeaders: false,
-          height: 'auto',
-          stretchH: 'all',
-          minRows: 4,
-          contextMenu: ['row_above', 'row_below', 'remove_row', '---------', 'undo', 'redo'],
-          licenseKey: 'non-commercial-and-evaluation',
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
-          cells: (row, col) => {
-            const cellProperties = {};
-            if (col === 5 && row > 0) {
-              cellProperties.type = 'numeric';
-              cellProperties.numericFormat = { pattern: '0,0', culture: 'ja-JP' };
-            }
-            // 修正：列6（チェック）と列7（手配完了）はチェックボックスではなくテキスト入力可能にする
-            if ((col === 6 || col === 7) && row > 0 && row < that.getRowCount('expense') - 1) {
-              cellProperties.type = 'text';
-            }
-            if (row === that.getRowCount('expense') - 1) {
-              cellProperties.readOnly = true;
-              if (col === 0) { cellProperties.className = 'total-cell'; }
-            }
-            return cellProperties;
-          },
-          afterChange: (changes, source) => {
-            if (source === 'edit' || source === 'paste') {
-              console.log("支払グリッド afterChange:", changes);
-              setTimeout(() => {
-                that.calculateExpenseTotal();
-                that.markHasChanges();
-              }, 0);
-            }
-          },
-          afterCreateRow: function(index, amount, source) {
-            try {
-              const rowCount = this.countRows();
-              const data = this.getData();
-              console.log("支払グリッド afterCreateRow: index=", index, " amount=", amount, " rowCount=", rowCount);
-              if (!data[rowCount - 1][0] || !String(data[rowCount - 1][0]).startsWith('B ')) {
-                for (let i = 0; i < rowCount; i++) {
-                  if (data[i][0] && String(data[i][0]).startsWith('B ')) {
-                    const totalRow = data[i].slice();
-                    console.log("支払グリッド: 合計行発見 at row", i);
-                    this.alter('remove_row', i, 1);
-                    console.log("支払グリッド: remove_row", i);
-                    this.alter('insert_row', rowCount, 1);
-                    console.log("支払グリッド: insert_row at index", rowCount);
-                    this.setDataAtRow(rowCount, totalRow);
-                    break;
-                  }
-                }
-              }
-              that.calculateExpenseTotal();
-              that.markHasChanges();
-              setTimeout(() => { that.adjustTableHeights(); }, 100);
-            } catch (error) { console.error('支払グリッド 行追加処理エラー:', error); }
-          },
-          afterRemoveRow: function(index, amount) {
-            console.log("支払グリッド afterRemoveRow: index=", index, " amount=", amount);
-            that.calculateExpenseTotal();
-            that.markHasChanges();
-            setTimeout(() => { that.adjustTableHeights(); }, 100);
-          }
-        });
-        
-        // 収支情報グリッド（2行×8列）
-        this.grids.summary = new Handsontable(document.getElementById('summary-grid'), {
-          data: this.deepCopy(this.templates.summary),
-          rowHeaders: false,
-          colHeaders: false,
-          height: 'auto',
-          stretchH: 'all',
-          licenseKey: 'non-commercial-and-evaluation',
-          viewportRowRenderingOffset: 100,
-          renderAllRows: true,
-          overflow: 'visible',
-          cells: (row, col) => {
-            const cellProperties = {};
-            // 行0はラベル行：読み取り専用
-            if (row === 0) { cellProperties.readOnly = true; }
-            return cellProperties;
-          },
-          afterChange: (changes, source) => {
-            if (source === 'edit' || source === 'paste') {
-              console.log("収支グリッド afterChange:", changes);
-              setTimeout(() => {
-                that.markHasChanges();
-                that.debouncedUpdateSummary();
-              }, 0);
-            }
-          }
-        });
-        console.log("initGrids() end");
       },
       
       setupEventListeners: function() {
         console.log("setupEventListeners() start");
+        // メインボタン
         document.getElementById('save-btn').addEventListener('click', () => { this.saveKarte(); });
         document.getElementById('new-btn').addEventListener('click', () => {
           if (this.hasChanges && !confirm('保存されていない変更があります。新規カルテを作成しますか？')) { return; }
@@ -598,69 +785,130 @@
         document.getElementById('open-btn').addEventListener('click', () => { this.loadKarteList(); });
         document.getElementById('export-btn').addEventListener('click', () => { this.exportToExcel(); });
         
-        // 入金情報行追加
-        document.getElementById('add-payment-row').addEventListener('click', () => {
-          const hot = this.grids.payment;
-          const rowCount = hot.countRows();
-          console.log("add-payment-row: current rowCount=", rowCount);
-          try {
-            hot.alter('insert_row', rowCount, 1);
-            console.log("入金情報: insert_row 成功");
-            setTimeout(() => { this.adjustTableHeights(); }, 100);
-          } catch (error) {
-            console.error('入金情報 行追加処理エラー:', error);
-            try {
-              const currentData = hot.getData();
-              const totalRow = currentData[rowCount - 1].slice();
-              currentData.splice(rowCount - 1, 1);
-              currentData.push(Array(totalRow.length).fill(''));
-              currentData.push(totalRow);
-              hot.loadData(currentData);
-              setTimeout(() => { this.adjustTableHeights(); }, 100);
-            } catch (innerError) {
-              console.error('入金情報 代替行追加も失敗:', innerError);
-              this.showNotification('行の追加に失敗しました', 'error');
-            }
+        // 自動計算フィールド
+        document.getElementById('departure-date').addEventListener('change', () => this.calculateNights());
+        document.getElementById('return-date').addEventListener('change', () => this.calculateNights());
+        document.getElementById('total-amount').addEventListener('input', () => this.calculateUnitPrice());
+        document.getElementById('total-persons').addEventListener('input', () => this.calculateUnitPrice());
+        
+        // 国内/海外選択時のカルテ番号プレフィックス設定
+        document.getElementById('travel-type').addEventListener('change', (e) => {
+          const prefix = e.target.value === 'domestic' ? 'D' : 'I';
+          const karteNoInput = document.getElementById('karte-no');
+          const currentValue = karteNoInput.value;
+          // 既存のD/Iプレフィックスを取り除く
+          let numericPart = currentValue.replace(/^[DI]-/, '');
+          karteNoInput.value = `${prefix}-${numericPart}`;
+        });
+        
+        // 行き先が「その他」の場合にテキスト入力を表示
+        document.getElementById('destination').addEventListener('change', (e) => {
+          const otherInput = document.getElementById('destination-other');
+          if (e.target.value === 'other') {
+            otherInput.style.display = 'block';
+          } else {
+            otherInput.style.display = 'none';
           }
         });
         
-        // 支払情報行追加
-        document.getElementById('add-expense-row').addEventListener('click', () => {
-          const hot = this.grids.expense;
-          const rowCount = hot.countRows();
-          console.log("add-expense-row: current rowCount=", rowCount);
-          try {
-            hot.alter('insert_row', rowCount, 1);
-            console.log("支払情報: insert_row 成功");
-            setTimeout(() => { this.adjustTableHeights(); }, 100);
-          } catch (error) {
-            console.error('支払情報 行追加処理エラー:', error);
-            try {
-              const currentData = hot.getData();
-              const totalRow = currentData[rowCount - 1].slice();
-              currentData.splice(rowCount - 1, 1);
-              currentData.push(Array(totalRow.length).fill(''));
-              currentData.push(totalRow);
-              hot.loadData(currentData);
-              setTimeout(() => { this.adjustTableHeights(); }, 100);
-            } catch (innerError) {
-              console.error('支払情報 代替行追加も失敗:', innerError);
-              this.showNotification('行の追加に失敗しました', 'error');
-            }
+        // 入金情報の追加ボタン
+        document.getElementById('add-payment').addEventListener('click', () => {
+          // モーダルを初期化して表示
+          document.getElementById('payment-due-date').value = '';
+          document.getElementById('payment-date').value = '';
+          document.getElementById('payment-amount').value = '';
+          document.getElementById('payment-place').value = '';
+          document.getElementById('payment-notes').value = '';
+          document.getElementById('payment-modal').style.display = 'block';
+        });
+        
+        // 入金情報の保存ボタン
+        document.getElementById('save-payment').addEventListener('click', () => {
+          const payment = {
+            id: Date.now().toString(), // ユニークID
+            dueDate: document.getElementById('payment-due-date').value,
+            date: document.getElementById('payment-date').value,
+            amount: parseFloat(document.getElementById('payment-amount').value) || 0,
+            place: document.getElementById('payment-place').value,
+            notes: document.getElementById('payment-notes').value
+          };
+          this.payments.push(payment);
+          this.renderPayments();
+          this.updateSummary();
+          document.getElementById('payment-modal').style.display = 'none';
+          this.markHasChanges();
+        });
+        
+        // 支払情報の追加ボタン
+        document.getElementById('add-expense').addEventListener('click', () => {
+          // モーダルを初期化して表示
+          document.getElementById('expense-date').value = '';
+          document.getElementById('expense-vendor').value = '';
+          document.getElementById('expense-phone').value = '';
+          document.getElementById('expense-person').value = '';
+          document.getElementById('expense-due-date').value = '';
+          document.getElementById('expense-amount').value = '';
+          document.getElementById('expense-status').value = '未手配';
+          document.getElementById('expense-notes').value = '';
+          document.getElementById('expense-modal').style.display = 'block';
+        });
+        
+        // 支払情報の保存ボタン
+        document.getElementById('save-expense').addEventListener('click', () => {
+          const expense = {
+            id: Date.now().toString(), // ユニークID
+            date: document.getElementById('expense-date').value,
+            vendor: document.getElementById('expense-vendor').value,
+            phone: document.getElementById('expense-phone').value,
+            person: document.getElementById('expense-person').value,
+            dueDate: document.getElementById('expense-due-date').value,
+            amount: parseFloat(document.getElementById('expense-amount').value) || 0,
+            status: document.getElementById('expense-status').value,
+            notes: document.getElementById('expense-notes').value
+          };
+          this.expenses.push(expense);
+          this.renderExpenses();
+          this.updateSummary();
+          document.getElementById('expense-modal').style.display = 'none';
+          this.markHasChanges();
+        });
+        
+        // コメント投稿ボタン
+        document.getElementById('post-comment').addEventListener('click', () => {
+          const commentText = document.getElementById('comment-text').value.trim();
+          if (commentText) {
+            const comment = {
+              id: Date.now().toString(),
+              text: commentText,
+              date: new Date().toISOString(),
+              author: document.getElementById('company-person').value || '担当者'
+            };
+            this.comments.unshift(comment); // 新しいコメントを先頭に追加
+            this.renderComments();
+            document.getElementById('comment-text').value = '';
+            this.markHasChanges();
           }
         });
         
         // モーダル関連
-        document.querySelector('.close').addEventListener('click', () => {
-          document.getElementById('list-modal').style.display = 'none';
+        document.querySelectorAll('.close').forEach(closeBtn => {
+          closeBtn.addEventListener('click', () => {
+            document.querySelectorAll('.modal').forEach(modal => {
+              modal.style.display = 'none';
+            });
+          });
         });
+        
         document.getElementById('search').addEventListener('input', (e) => { 
           this.filterKarteList(e.target.value); 
         });
+        
         window.addEventListener('click', (event) => { 
-          if (event.target === document.getElementById('list-modal')) { 
-            document.getElementById('list-modal').style.display = 'none'; 
-          } 
+          document.querySelectorAll('.modal').forEach(modal => {
+            if (event.target === modal) { 
+              modal.style.display = 'none'; 
+            }
+          });
         });
         
         // オンライン・オフライン
@@ -675,12 +923,6 @@
           this.showNotification('オフライン状態になりました', 'warning');
         });
         
-        // ウィンドウリサイズ
-        window.addEventListener('resize', () => {
-          clearTimeout(this.resizeTimer);
-          this.resizeTimer = setTimeout(() => { this.adjustTableHeights(); }, 200);
-        });
-        
         // ページ離脱前
         window.addEventListener('beforeunload', (e) => {
           if (this.hasChanges) {
@@ -691,7 +933,6 @@
         });
         console.log("setupEventListeners() end");
       },
-      
       showNotification: function(message, type = 'info') {
         console.log("showNotification:", message, type);
         const notification = document.getElementById('notification');
@@ -715,71 +956,220 @@
         this.currentId = null;
         document.getElementById('current-karte-id').textContent = '新規カルテ';
         document.getElementById('last-saved').textContent = '-';
-        this.grids.basic.loadData(this.deepCopy(this.templates.basic));
-        this.grids.payment.loadData(this.deepCopy(this.templates.payment));
-        this.grids.expense.loadData(this.deepCopy(this.templates.expense));
-        this.grids.summary.loadData(this.deepCopy(this.templates.summary));
+        
+        // 全フィールドをクリア
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+          } else {
+            input.value = '';
+          }
+        });
+        
+        // 国内/海外の初期値を設定
+        document.getElementById('travel-type').value = 'domestic';
+        document.getElementById('destination-other').style.display = 'none';
+        
+        // カルテ番号の初期値設定
         const today = new Date();
-        const y = today.getFullYear();
-        const m = ('0' + (today.getMonth() + 1)).slice(-2);
-        const d = ('0' + today.getDate()).slice(-2);
-        const formattedDate = `${y}/${m}/${d}`;
-        // 行0はラベルなので、行1の報告日セルに設定
-        this.grids.summary.setDataAtCell(1, 0, formattedDate, 'internal');
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('karte-no').value = `D-${yyyy}${mm}${dd}-`;
+        
+        // 配列をクリア
+        this.payments = [];
+        this.expenses = [];
+        this.comments = [];
+        
+        // 各セクションを再描画
+        this.renderPayments();
+        this.renderExpenses();
+        this.renderComments();
+        this.updateSummary();
+        
         this.hasChanges = false;
-        setTimeout(() => { this.adjustTableHeights(); }, 100);
       },
       
-      calculatePaymentTotal: function() {
-        if (!this.grids.payment) return;
-        try {
-          const data = this.grids.payment.getData();
-          let total = 0;
-          const lastRowIndex = data.length - 1;
-          for (let i = 1; i < lastRowIndex; i++) {
-            total += this.parseNumber(data[i][4]);
-          }
-          console.log("calculatePaymentTotal: total =", total);
-          // dataModel に保存
-          this.dataModel.paymentTotal = total;
-          // 支払グリッドの最終行（A 入金合計）のセルも更新
-          this.grids.payment.setDataAtCell(lastRowIndex, 4, total, 'internal');
-          // Summary グリッドの旅行総額/A にも即時転送
-          this.grids.summary.setDataAtCell(1, 4, total, 'internal');
-          // debounce を使って再計算
-          this.debouncedUpdateSummary();
-        } catch (error) { 
-          console.error('入金合計計算エラー:', error); 
+      calculateNights: function() {
+        const departureDate = document.getElementById('departure-date').value;
+        const returnDate = document.getElementById('return-date').value;
+        
+        if (departureDate && returnDate) {
+          const start = new Date(departureDate);
+          const end = new Date(returnDate);
+          const diffTime = Math.abs(end - start);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          document.getElementById('nights').value = diffDays;
+          this.markHasChanges();
         }
       },
       
-      calculateExpenseTotal: function() {
-        if (!this.grids.expense) return;
-        try {
-          const data = this.grids.expense.getData();
-          console.log("Expense Grid Raw Data:", data);
-          let total = 0;
-          const lastRowIndex = data.length - 1;
-          for (let i = 1; i < lastRowIndex; i++) {
-            const cellValue = this.parseNumber(data[i][5]);
-            console.log(`Row ${i} 支払金額:`, data[i][5], "→ parsed:", cellValue);
-            total += cellValue;
-          }
-          console.log("calculateExpenseTotal: Computed total =", total);
-          // dataModel に保存
-          this.dataModel.expenseTotal = total;
-          // 最終行の支払合計セルを Summary に即時転送
-          this.grids.expense.setDataAtCell(lastRowIndex, 5, total, 'internal');
-          this.grids.summary.setDataAtCell(1, 5, total, 'internal');
-          // debounce を使って再計算
-          this.debouncedUpdateSummary();
-        } catch (error) { 
-          console.error('支払合計計算エラー:', error); 
+      calculateUnitPrice: function() {
+        const amount = parseFloat(document.getElementById('total-amount').value) || 0;
+        const persons = parseInt(document.getElementById('total-persons').value) || 0;
+        
+        if (amount > 0 && persons > 0) {
+          const unitPrice = Math.round(amount / persons);
+          document.getElementById('unit-price').value = unitPrice;
+          this.markHasChanges();
+        } else {
+          document.getElementById('unit-price').value = '';
         }
       },
       
-      // 従来の calculateProfit() は updateSummaryFromDataModel() に統合
-      // ※updateSummaryFromDataModel() 内で利益等を再計算します
+      renderPayments: function() {
+        const container = document.getElementById('payment-list');
+        container.innerHTML = '';
+        
+        if (this.payments.length === 0) {
+          container.innerHTML = '<p>入金情報がありません</p>';
+          return;
+        }
+        
+        this.payments.forEach(payment => {
+          const card = document.createElement('div');
+          card.className = 'info-card';
+          card.innerHTML = `
+            <div class="info-card-header">
+              <span>${payment.date ? '入金済み' : '入金予定'}</span>
+              <button class="remove-card-btn" data-id="${payment.id}">削除</button>
+            </div>
+            <div class="info-card-body">
+              <div class="info-card-item">
+                <div class="info-card-label">入金予定日</div>
+                <div class="info-card-value">${payment.dueDate || '未設定'}</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">入金日</div>
+                <div class="info-card-value">${payment.date || '未入金'}</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">入金額</div>
+                <div class="info-card-value">${payment.amount.toLocaleString()}円</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">入金場所</div>
+                <div class="info-card-value">${payment.place || '-'}</div>
+              </div>
+            </div>
+            ${payment.notes ? `<div class="info-card-notes">${payment.notes}</div>` : ''}
+          `;
+          container.appendChild(card);
+        });
+        
+        // 削除ボタンにイベントリスナーを追加
+        document.querySelectorAll('#payment-list .remove-card-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-id');
+            this.payments = this.payments.filter(item => item.id !== id);
+            this.renderPayments();
+            this.updateSummary();
+            this.markHasChanges();
+          });
+        });
+      },
+      
+      renderExpenses: function() {
+        const container = document.getElementById('expense-list');
+        container.innerHTML = '';
+        
+        if (this.expenses.length === 0) {
+          container.innerHTML = '<p>支払情報がありません</p>';
+          return;
+        }
+        
+        this.expenses.forEach(expense => {
+          const card = document.createElement('div');
+          card.className = 'info-card';
+          card.innerHTML = `
+            <div class="info-card-header">
+              <span>${expense.vendor} (${expense.status})</span>
+              <button class="remove-card-btn" data-id="${expense.id}">削除</button>
+            </div>
+            <div class="info-card-body">
+              <div class="info-card-item">
+                <div class="info-card-label">利用日</div>
+                <div class="info-card-value">${expense.date || '-'}</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">担当者</div>
+                <div class="info-card-value">${expense.person || '-'}</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">支払予定日</div>
+                <div class="info-card-value">${expense.dueDate || '-'}</div>
+              </div>
+              <div class="info-card-item">
+                <div class="info-card-label">支払金額</div>
+                <div class="info-card-value">${expense.amount.toLocaleString()}円</div>
+              </div>
+            </div>
+            ${expense.notes ? `<div class="info-card-notes">${expense.notes}</div>` : ''}
+          `;
+          container.appendChild(card);
+        });
+        
+        // 削除ボタンにイベントリスナーを追加
+        document.querySelectorAll('#expense-list .remove-card-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-id');
+            this.expenses = this.expenses.filter(item => item.id !== id);
+            this.renderExpenses();
+            this.updateSummary();
+            this.markHasChanges();
+          });
+        });
+      },
+      
+      renderComments: function() {
+        const container = document.getElementById('comment-thread');
+        container.innerHTML = '';
+        
+        if (this.comments.length === 0) {
+          container.innerHTML = '<p>コメントはありません</p>';
+          return;
+        }
+        
+        this.comments.forEach(comment => {
+          const date = new Date(comment.date);
+          const formattedDate = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+          
+          const commentDiv = document.createElement('div');
+          commentDiv.className = 'comment-item';
+          commentDiv.innerHTML = `
+            <div class="comment-meta">
+              <strong>${comment.author}</strong> - ${formattedDate}
+            </div>
+            <div class="comment-text">${comment.text}</div>
+          `;
+          container.appendChild(commentDiv);
+        });
+      },
+      
+      updateSummary: function() {
+        // 入金の合計を計算
+        const totalPayment = this.payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+        document.getElementById('total-payment').value = totalPayment.toLocaleString() + '円';
+        
+        // 支払の合計を計算
+        const totalExpense = this.expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+        document.getElementById('total-expense').value = totalExpense.toLocaleString() + '円';
+        
+        // 利益額を計算
+        const profit = totalPayment - totalExpense;
+        document.getElementById('profit-amount').value = profit.toLocaleString() + '円';
+        
+        // 利益率を計算
+        const profitRate = totalPayment > 0 ? (profit / totalPayment * 100).toFixed(1) : 0;
+        document.getElementById('profit-rate').value = profitRate + '%';
+        
+        // 一人あたり利益を計算
+        const persons = parseInt(document.getElementById('total-persons').value) || 0;
+        const profitPerPerson = persons > 0 ? Math.round(profit / persons) : 0;
+        document.getElementById('profit-per-person').value = profitPerPerson.toLocaleString() + '円';
+      },
       
       saveKarte: function() {
         console.log("saveKarte() called");
@@ -787,22 +1177,31 @@
           this.showNotification('オフライン状態では保存できません', 'error');
           return;
         }
+        
         document.getElementById('last-saved').textContent = '保存中...';
+        
         try {
-          const basicGridData = this.grids.basic ? this.prepareDataForFirebase(this.grids.basic.getData()) : [];
-          const paymentGridData = this.grids.payment ? this.prepareDataForFirebase(this.grids.payment.getData()) : [];
-          const expenseGridData = this.grids.expense ? this.prepareDataForFirebase(this.grids.expense.getData()) : [];
-          const summaryGridData = this.grids.summary ? this.prepareDataForFirebase(this.grids.summary.getData()) : [];
-          console.log("saveKarte: basicGridData=", basicGridData);
-          const karteInfo = this.extractKarteInfo(basicGridData);
-          const karteData = {
-            basicData: JSON.stringify(basicGridData),
-            paymentData: JSON.stringify(paymentGridData),
-            expenseData: JSON.stringify(expenseGridData),
-            summaryData: JSON.stringify(summaryGridData),
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-            karteInfo: karteInfo
+          // フォームから基本情報を取得
+          const karteData = this.getFormData();
+          
+          // 配列データを追加
+          karteData.payments = this.payments;
+          karteData.expenses = this.expenses;
+          karteData.comments = this.comments;
+          
+          // タイムスタンプを追加
+          karteData.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+          
+          // カルテ情報を抽出（一覧表示用）
+          const karteInfo = {
+            karteNo: document.getElementById('karte-no').value || '',
+            tantosha: document.getElementById('company-person').value || '',
+            dantaiName: document.getElementById('client-company').value || '',
+            departureDate: document.getElementById('departure-date').value || '',
+            personCount: document.getElementById('total-persons').value || '',
+            destination: this.getDestinationValue()
           };
+          karteData.karteInfo = karteInfo;
           
           let savePromise;
           if (this.currentId) {
@@ -813,6 +1212,7 @@
             savePromise = db.collection('karte').add(karteData)
               .then(docRef => { this.currentId = docRef.id; return docRef; });
           }
+          
           savePromise.then(() => {
             const now = new Date();
             document.getElementById('last-saved').textContent = now.toLocaleString();
@@ -832,59 +1232,54 @@
         }
       },
       
-      prepareDataForFirebase: function(data) {
-        console.log("prepareDataForFirebase() input:", data);
-        if (!data || !Array.isArray(data)) { return []; }
-        const processedData = JSON.parse(JSON.stringify(data));
-        const result = processedData.map(row => {
-          if (!Array.isArray(row)) { return []; }
-          return row.map(cell => { return this.cleanCellValue(cell); });
-        });
-        console.log("prepareDataForFirebase() output:", result);
-        return result;
+      getFormData: function() {
+        return {
+          travelType: document.getElementById('travel-type').value,
+          karteNo: document.getElementById('karte-no').value,
+          companyPerson: document.getElementById('company-person').value,
+          clientCompany: document.getElementById('client-company').value,
+          clientPerson: document.getElementById('client-person').value,
+          clientPhone: document.getElementById('client-phone').value,
+          clientEmail: document.getElementById('client-email').value,
+          departureDate: document.getElementById('departure-date').value,
+          returnDate: document.getElementById('return-date').value,
+          nights: document.getElementById('nights').value,
+          departurePlace: document.getElementById('departure-place').value,
+          destination: this.getDestinationValue(),
+          travelContent: document.getElementById('travel-content').value,
+          totalPersons: document.getElementById('total-persons').value,
+          totalAmount: document.getElementById('total-amount').value,
+          unitPrice: document.getElementById('unit-price').value,
+          paymentTo: document.getElementById('payment-to').value,
+          arrangementStatus: document.getElementById('arrangement-status').value,
+          memo: document.getElementById('memo').value
+        };
       },
       
-      cleanCellValue: function(cell) {
-        if (cell === undefined || cell === null) { return ''; }
-        if (typeof cell === 'number' && isNaN(cell)) { return 0; }
-        if (cell instanceof Date) { return cell.toISOString(); }
-        if (typeof cell === 'object') { return JSON.stringify(cell); }
-        return cell;
-      },
-      
-      extractKarteInfo: function(basicData) {
-        const karteInfo = {};
-        try {
-          if (basicData && basicData.length >= 6) {
-            if (basicData[0] && basicData[0].length >= 2) { karteInfo.karteNo = basicData[0][1] || ''; }
-            if (basicData[1] && basicData[1].length >= 2) { karteInfo.tantosha = basicData[1][1] || ''; }
-            if (basicData[0] && basicData[0].length >= 4) { karteInfo.companyTantosha = basicData[0][3] || ''; }
-            if (basicData[1] && basicData[1].length >= 4) { karteInfo.dantaiName = basicData[1][3] || ''; }
-            if (basicData[1] && basicData[1].length >= 6) { karteInfo.phoneNumber = basicData[1][5] || ''; }
-            if (basicData[2] && basicData[2].length >= 2) { karteInfo.stayDate = basicData[2][1] || ''; }
-            if (basicData[2] && basicData[2].length >= 4) { karteInfo.nights = basicData[2][3] || ''; }
-            if (basicData[2] && basicData[2].length >= 6) { karteInfo.personCount = basicData[2][5] || ''; }
-            if (basicData[5] && basicData[5].length >= 2) { karteInfo.departure = basicData[5][1] || ''; }
-            if (basicData[5] && basicData[5].length >= 4) { karteInfo.destination = basicData[5][3] || ''; }
-          }
-        } catch (e) { console.error('カルテ情報抽出エラー:', e); }
-        console.log("extractKarteInfo() output:", karteInfo);
-        return karteInfo;
+      getDestinationValue: function() {
+        const select = document.getElementById('destination');
+        if (select.value === 'other') {
+          return document.getElementById('destination-other').value;
+        }
+        return select.value;
       },
       
       loadKarteList: function() {
         console.log("loadKarteList() called");
         if (this.hasChanges && !confirm('保存されていない変更があります。カルテ一覧を開きますか？')) { return; }
+        
         const listBody = document.querySelector('#karte-list tbody');
-        listBody.innerHTML = '<tr><td colspan="7">読み込み中...</td></tr>';
+        listBody.innerHTML = '<tr><td colspan="6">読み込み中...</td></tr>';
         document.getElementById('list-modal').style.display = 'block';
         document.getElementById('search').value = '';
+        
         db.collection('karte').orderBy('lastUpdated', 'desc').limit(50).get()
           .then(querySnapshot => {
             if (querySnapshot.empty) {
-              listBody.innerHTML = '<tr><td colspan="7">カルテがありません</td></tr>';
+              listBody.innerHTML = '<tr><td colspan="6">カルテがありません</td></tr>';
               return;
             }
+            
             let html = '';
             querySnapshot.forEach(doc => {
               const data = doc.data();
@@ -894,8 +1289,7 @@
                   <td>${info.karteNo || '-'}</td>
                   <td>${info.tantosha || '-'}</td>
                   <td>${info.dantaiName || '-'}</td>
-                  <td>${info.stayDate || '-'}</td>
-                  <td>${info.personCount || '-'}</td>
+                  <td>${info.departureDate || '-'}</td>
                   <td>${info.destination || '-'}</td>
                   <td>
                     <button class="edit-btn" data-id="${doc.id}">編集</button>
@@ -904,7 +1298,9 @@
                 </tr>
               `;
             });
+            
             listBody.innerHTML = html;
+            
             document.querySelectorAll('.edit-btn').forEach(btn => {
               btn.addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
@@ -912,6 +1308,7 @@
                 document.getElementById('list-modal').style.display = 'none';
               });
             });
+            
             document.querySelectorAll('.delete-btn').forEach(btn => {
               btn.addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
@@ -921,15 +1318,16 @@
           })
           .catch(error => {
             console.error('カルテリスト取得エラー:', error);
-            listBody.innerHTML = `<tr><td colspan="7">エラー: ${error.message}</td></tr>`;
+            listBody.innerHTML = `<tr><td colspan="6">エラー: ${error.message}</td></tr>`;
             this.showNotification('カルテ一覧の取得に失敗しました', 'error');
           });
       },
-      
       loadKarte: function(id) {
         console.log("loadKarte() called, id=", id);
         if (this.hasChanges && !confirm('保存されていない変更があります。別のカルテを開きますか？')) { return; }
+        
         document.getElementById('last-saved').textContent = '読み込み中...';
+        
         db.collection('karte').doc(id).get()
           .then(doc => {
             if (!doc.exists) {
@@ -937,17 +1335,30 @@
               document.getElementById('last-saved').textContent = '-';
               return;
             }
+            
             const data = doc.data();
-            if (data.basicData)   this.grids.basic.loadData(JSON.parse(data.basicData));
-            if (data.paymentData) this.grids.payment.loadData(JSON.parse(data.paymentData));
-            if (data.expenseData) this.grids.expense.loadData(JSON.parse(data.expenseData));
-            if (data.summaryData) this.grids.summary.loadData(JSON.parse(data.summaryData));
             this.currentId = id;
+            
+            // 基本フォームデータをセット
+            this.setFormData(data);
+            
+            // 配列データをセット
+            this.payments = Array.isArray(data.payments) ? data.payments : [];
+            this.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+            this.comments = Array.isArray(data.comments) ? data.comments : [];
+            
+            // 各セクションを再描画
+            this.renderPayments();
+            this.renderExpenses();
+            this.renderComments();
+            this.updateSummary();
+            
+            // カルテ番号と最終更新日を表示
             const karteInfo = data.karteInfo || {};
             document.getElementById('current-karte-id').textContent = karteInfo.karteNo || '新規カルテ';
             document.getElementById('last-saved').textContent = data.lastUpdated ? data.lastUpdated.toDate().toLocaleString() : '-';
+            
             this.hasChanges = false;
-            setTimeout(() => { this.adjustTableHeights(); }, 100);
             this.showNotification('カルテを読み込みました', 'success');
             console.log("loadKarte() succeeded");
           })
@@ -958,8 +1369,49 @@
           });
       },
       
+      setFormData: function(data) {
+        // 基本フォームデータを設定
+        if (data.travelType) document.getElementById('travel-type').value = data.travelType;
+        if (data.karteNo) document.getElementById('karte-no').value = data.karteNo;
+        if (data.companyPerson) document.getElementById('company-person').value = data.companyPerson;
+        if (data.clientCompany) document.getElementById('client-company').value = data.clientCompany;
+        if (data.clientPerson) document.getElementById('client-person').value = data.clientPerson;
+        if (data.clientPhone) document.getElementById('client-phone').value = data.clientPhone;
+        if (data.clientEmail) document.getElementById('client-email').value = data.clientEmail;
+        if (data.departureDate) document.getElementById('departure-date').value = data.departureDate;
+        if (data.returnDate) document.getElementById('return-date').value = data.returnDate;
+        if (data.nights) document.getElementById('nights').value = data.nights;
+        if (data.departurePlace) document.getElementById('departure-place').value = data.departurePlace;
+        
+        // 行き先の設定
+        if (data.destination) {
+          const destinationSelect = document.getElementById('destination');
+          const destinationOther = document.getElementById('destination-other');
+          
+          // 都道府県リストにあるか確認
+          const options = Array.from(destinationSelect.options).map(opt => opt.value);
+          if (options.includes(data.destination)) {
+            destinationSelect.value = data.destination;
+            destinationOther.style.display = 'none';
+          } else {
+            destinationSelect.value = 'other';
+            destinationOther.style.display = 'block';
+            destinationOther.value = data.destination;
+          }
+        }
+        
+        if (data.travelContent) document.getElementById('travel-content').value = data.travelContent;
+        if (data.totalPersons) document.getElementById('total-persons').value = data.totalPersons;
+        if (data.totalAmount) document.getElementById('total-amount').value = data.totalAmount;
+        if (data.unitPrice) document.getElementById('unit-price').value = data.unitPrice;
+        if (data.paymentTo) document.getElementById('payment-to').value = data.paymentTo;
+        if (data.arrangementStatus) document.getElementById('arrangement-status').value = data.arrangementStatus;
+        if (data.memo) document.getElementById('memo').value = data.memo;
+      },
+      
       deleteKarte: function(id) {
         console.log("deleteKarte() called, id=", id);
+        
         db.collection('karte').doc(id).delete()
           .then(() => {
             this.showNotification('カルテを削除しました', 'success');
@@ -974,24 +1426,102 @@
       
       exportToExcel: function() {
         console.log("exportToExcel() called");
+        
         try {
           const wb = XLSX.utils.book_new();
-          const basicWs = XLSX.utils.aoa_to_sheet(this.grids.basic.getData());
-          const paymentWs = XLSX.utils.aoa_to_sheet(this.grids.payment.getData());
-          const expenseWs = XLSX.utils.aoa_to_sheet(this.grids.expense.getData());
-          const summaryWs = XLSX.utils.aoa_to_sheet(this.grids.summary.getData());
-          XLSX.utils.book_append_sheet(wb, basicWs, '基本情報');
-          XLSX.utils.book_append_sheet(wb, paymentWs, '入金情報');
-          XLSX.utils.book_append_sheet(wb, expenseWs, '支払情報');
-          XLSX.utils.book_append_sheet(wb, summaryWs, '収支情報');
-          const basicData = this.grids.basic.getData();
-          let karteNo = '';
-          if (basicData && basicData.length > 0 && basicData[0].length > 1) { karteNo = basicData[0][1] || ''; }
+          
+          // 基本情報シート
+          const basicData = [
+            ['◆ 基本情報', ''],
+            ['国内/海外', document.getElementById('travel-type').value === 'domestic' ? '国内' : '海外'],
+            ['カルテ番号', document.getElementById('karte-no').value],
+            ['自社担当者', document.getElementById('company-person').value],
+            ['クライアント会社名', document.getElementById('client-company').value],
+            ['クライアント担当者', document.getElementById('client-person').value],
+            ['電話番号', document.getElementById('client-phone').value],
+            ['メールアドレス', document.getElementById('client-email').value],
+            ['出発日', document.getElementById('departure-date').value],
+            ['帰着日', document.getElementById('return-date').value],
+            ['泊数', document.getElementById('nights').value],
+            ['出発地', document.getElementById('departure-place').value],
+            ['行き先', this.getDestinationValue()],
+            ['旅行内容', document.getElementById('travel-content').value],
+            ['合計人数', document.getElementById('total-persons').value],
+            ['金額', document.getElementById('total-amount').value],
+            ['単価', document.getElementById('unit-price').value],
+            ['支払い先', document.getElementById('payment-to').value],
+            ['手配状況', document.getElementById('arrangement-status').value]
+          ];
+          
+          // 入金情報シート
+          const paymentData = [['◆ 入金情報', '', '', '', '']];
+          paymentData.push(['入金予定日', '入金日', '入金額', '入金場所', '備考']);
+          this.payments.forEach(payment => {
+            paymentData.push([
+              payment.dueDate || '',
+              payment.date || '',
+              payment.amount,
+              payment.place || '',
+              payment.notes || ''
+            ]);
+          });
+          
+          // 支払情報シート
+          const expenseData = [['◆ 支払情報', '', '', '', '', '', '']];
+          expenseData.push(['利用日', '手配先名', '電話/FAX', '担当者', '支払予定日', '支払金額', '手配状況']);
+          this.expenses.forEach(expense => {
+            expenseData.push([
+              expense.date || '',
+              expense.vendor || '',
+              expense.phone || '',
+              expense.person || '',
+              expense.dueDate || '',
+              expense.amount,
+              expense.status || ''
+            ]);
+          });
+          
+          // 収支情報シート
+          const summaryData = [
+            ['◆ 収支情報', ''],
+            ['総入金額', document.getElementById('total-payment').value],
+            ['総支払額', document.getElementById('total-expense').value],
+            ['利益額', document.getElementById('profit-amount').value],
+            ['利益率', document.getElementById('profit-rate').value],
+            ['一人あたり利益', document.getElementById('profit-per-person').value]
+          ];
+          
+          // メモ欄シート
+          const memoData = [
+            ['◆ メモ欄', ''],
+            [document.getElementById('memo').value, '']
+          ];
+          
+          // コメントシート
+          const commentData = [['◆ コメント欄', '', '']];
+          commentData.push(['投稿者', '日時', 'コメント']);
+          this.comments.forEach(comment => {
+            const date = new Date(comment.date);
+            const formattedDate = date.toLocaleString();
+            commentData.push([comment.author, formattedDate, comment.text]);
+          });
+          
+          // シートを追加
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(basicData), '基本情報');
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(paymentData), '入金情報');
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(expenseData), '支払情報');
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), '収支情報');
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(memoData), 'メモ');
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(commentData), 'コメント');
+          
+          // ファイル名を設定して出力
+          const karteNo = document.getElementById('karte-no').value || '';
           const now = new Date();
           const y = now.getFullYear();
           const m = ('0' + (now.getMonth() + 1)).slice(-2);
           const d = ('0' + now.getDate()).slice(-2);
           const filename = `${karteNo || 'カルテ'}_${y}${m}${d}.xlsx`;
+          
           XLSX.writeFile(wb, filename);
           this.showNotification('Excelファイルを出力しました', 'success');
           console.log("exportToExcel() succeeded");
@@ -1003,25 +1533,34 @@
       
       filterKarteList: function(searchText) {
         console.log("filterKarteList() called, searchText=", searchText);
+        
         const rows = document.querySelectorAll('#karte-list tbody tr');
         searchText = searchText.toLowerCase();
         let foundCount = 0;
+        
         rows.forEach(row => {
           if (row.querySelector('td[colspan]')) { return; }
+          
           let found = false;
           const cells = row.querySelectorAll('td:not(:last-child)');
-          cells.forEach(cell => { if (cell.textContent.toLowerCase().includes(searchText)) { found = true; } });
+          cells.forEach(cell => { 
+            if (cell.textContent.toLowerCase().includes(searchText)) { found = true; } 
+          });
+          
           row.style.display = found ? '' : 'none';
           if (found) { foundCount++; }
         });
+        
         if (foundCount === 0 && searchText) {
           const listBody = document.querySelector('#karte-list tbody');
           const noResultRow = document.getElementById('no-results-row');
+          
           if (noResultRow) { noResultRow.remove(); }
+          
           if (rows.length > 0) {
             const message = document.createElement('tr');
             message.id = 'no-results-row';
-            message.innerHTML = `<td colspan="7" style="text-align: center;">「${searchText}」に一致するカルテはありません</td>`;
+            message.innerHTML = `<td colspan="6" style="text-align: center;">「${searchText}」に一致するカルテはありません</td>`;
             listBody.appendChild(message);
           }
         } else {
@@ -1030,38 +1569,8 @@
         }
       },
       
-      markHasChanges: function() { this.hasChanges = true; },
-      getRowCount: function(gridName) { return this.grids[gridName] ? this.grids[gridName].countRows() : 0; },
-      parseNumber: function(value) {
-        if (value === null || value === undefined || value === '') { return 0; }
-        if (typeof value === 'number') { return isNaN(value) ? 0 : value; }
-        const cleanValue = String(value).replace(/[^\d.-]/g, '');
-        const number = parseFloat(cleanValue);
-        return isNaN(number) ? 0 : number;
-      },
-      deepCopy: function(obj) { return JSON.parse(JSON.stringify(obj)); },
-      
-      adjustTableHeights: function() {
-        ['basic', 'payment', 'expense', 'summary'].forEach(gridName => {
-          const grid = this.grids[gridName];
-          if (grid) {
-            try {
-              grid.render();
-              const table = grid.rootElement.querySelector('.htCore');
-              if (table) {
-                const tableHeight = table.offsetHeight;
-                grid.rootElement.style.height = tableHeight + 'px';
-                const container = grid.rootElement.closest('.grid-container');
-                if (container) { container.style.height = 'auto'; }
-                const wtHolder = grid.rootElement.querySelector('.wtHolder');
-                if (wtHolder) { wtHolder.style.height = 'auto'; }
-                const wtSpreader = grid.rootElement.querySelector('.wtSpreader');
-                if (wtSpreader) { wtSpreader.style.height = 'auto'; }
-                console.log(`${gridName} の高さ調整: tableHeight=${tableHeight}`);
-              }
-            } catch (e) { console.error(`${gridName} の高さ調整エラー:`, e); }
-          }
-        });
+      markHasChanges: function() { 
+        this.hasChanges = true; 
       }
     };
 
