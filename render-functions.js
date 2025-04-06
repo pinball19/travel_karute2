@@ -162,4 +162,18 @@ function updateSummary(app) {
   document.getElementById('profit-amount').value = profit.toLocaleString() + '円';
   
   // 利益率を計算
-  const profitRate = totalPayment > 0 ? (profit / total
+  const profitRate = totalPayment > 0 ? (profit / totalPayment * 100).toFixed(1) : 0;
+  document.getElementById('profit-rate').value = profitRate + '%';
+  
+  // 一人あたり利益を計算
+  const persons = parseInt(document.getElementById('total-persons').value) || 0;
+  const profitPerPerson = persons > 0 ? Math.round(profit / persons) : 0;
+  document.getElementById('profit-per-person').value = profitPerPerson.toLocaleString() + '円';
+  
+  // 自動計算の表示更新も兼ねているので単価も再計算
+  const totalAmount = parseFloat(document.getElementById('total-amount').value) || 0;
+  if (totalAmount > 0 && persons > 0) {
+    const unitPrice = Math.round(totalAmount / persons);
+    document.getElementById('unit-price').value = unitPrice;
+  }
+}
