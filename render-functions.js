@@ -22,7 +22,10 @@ function renderPayments(app) {
     card.innerHTML = `
       <div class="info-card-header">
         <span>${payment.date ? '入金済み' : '入金予定'}</span>
-        <button class="remove-card-btn" data-id="${payment.id}">削除</button>
+        <div class="card-actions">
+          <button class="edit-card-btn" data-id="${payment.id}">編集</button>
+          <button class="remove-card-btn" data-id="${payment.id}">削除</button>
+        </div>
       </div>
       <div class="info-card-body">
         <div class="info-card-item">
@@ -47,14 +50,24 @@ function renderPayments(app) {
     container.appendChild(card);
   });
   
+  // 編集ボタンにイベントリスナーを追加
+  document.querySelectorAll('#payment-list .edit-card-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id');
+      editPayment(app, id);
+    });
+  });
+  
   // 削除ボタンにイベントリスナーを追加
   document.querySelectorAll('#payment-list .remove-card-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.target.getAttribute('data-id');
-      app.payments = app.payments.filter(item => item.id !== id);
-      renderPayments(app);
-      updateSummary(app);
-      app.markHasChanges();
+      if (confirm('この入金情報を削除しますか？')) {
+        app.payments = app.payments.filter(item => item.id !== id);
+        renderPayments(app);
+        updateSummary(app);
+        app.markHasChanges();
+      }
     });
   });
 }
@@ -78,7 +91,10 @@ function renderExpenses(app) {
     card.innerHTML = `
       <div class="info-card-header">
         <span>${expense.vendor} (${expense.status})</span>
-        <button class="remove-card-btn" data-id="${expense.id}">削除</button>
+        <div class="card-actions">
+          <button class="edit-card-btn" data-id="${expense.id}">編集</button>
+          <button class="remove-card-btn" data-id="${expense.id}">削除</button>
+        </div>
       </div>
       <div class="info-card-body">
         <div class="info-card-item">
@@ -103,14 +119,24 @@ function renderExpenses(app) {
     container.appendChild(card);
   });
   
+  // 編集ボタンにイベントリスナーを追加
+  document.querySelectorAll('#expense-list .edit-card-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id');
+      editExpense(app, id);
+    });
+  });
+  
   // 削除ボタンにイベントリスナーを追加
   document.querySelectorAll('#expense-list .remove-card-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.target.getAttribute('data-id');
-      app.expenses = app.expenses.filter(item => item.id !== id);
-      renderExpenses(app);
-      updateSummary(app);
-      app.markHasChanges();
+      if (confirm('この支払情報を削除しますか？')) {
+        app.expenses = app.expenses.filter(item => item.id !== id);
+        renderExpenses(app);
+        updateSummary(app);
+        app.markHasChanges();
+      }
     });
   });
 }
@@ -176,4 +202,57 @@ function updateSummary(app) {
     const unitPrice = Math.round(totalAmount / persons);
     document.getElementById('unit-price').value = unitPrice;
   }
+}
+
+/**
+ * 入金情報の編集モーダルを表示
+ * @param {Object} app - KarteAppオブジェクト
+ * @param {string} id - 編集する入金情報のID
+ */
+function editPayment(app, id) {
+  // IDに一致する入金情報を検索
+  const payment = app.payments.find(p => p.id === id);
+  if (!payment) return;
+  
+  // モーダルのタイトルを編集モードに変更
+  document.getElementById('payment-modal-title').textContent = '入金情報の編集';
+  
+  // フォームに値をセット
+  document.getElementById('payment-id').value = payment.id;
+  document.getElementById('payment-due-date').value = payment.dueDate || '';
+  document.getElementById('payment-date').value = payment.date || '';
+  document.getElementById('payment-amount').value = payment.amount || '';
+  document.getElementById('payment-place').value = payment.place || '';
+  document.getElementById('payment-notes').value = payment.notes || '';
+  
+  // モーダルを表示
+  document.getElementById('payment-modal').style.display = 'block';
+}
+
+/**
+ * 支払情報の編集モーダルを表示
+ * @param {Object} app - KarteAppオブジェクト
+ * @param {string} id - 編集する支払情報のID
+ */
+function editExpense(app, id) {
+  // IDに一致する支払情報を検索
+  const expense = app.expenses.find(e => e.id === id);
+  if (!expense) return;
+  
+  // モーダルのタイトルを編集モードに変更
+  document.getElementById('expense-modal-title').textContent = '支払情報の編集';
+  
+  // フォームに値をセット
+  document.getElementById('expense-id').value = expense.id;
+  document.getElementById('expense-date').value = expense.date || '';
+  document.getElementById('expense-vendor').value = expense.vendor || '';
+  document.getElementById('expense-phone').value = expense.phone || '';
+  document.getElementById('expense-person').value = expense.person || '';
+  document.getElementById('expense-due-date').value = expense.dueDate || '';
+  document.getElementById('expense-amount').value = expense.amount || '';
+  document.getElementById('expense-status').value = expense.status || '未手配';
+  document.getElementById('expense-notes').value = expense.notes || '';
+  
+  // モーダルを表示
+  document.getElementById('expense-modal').style.display = 'block';
 }
