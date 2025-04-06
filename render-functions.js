@@ -154,7 +154,14 @@ function renderComments(app) {
     return;
   }
   
-  app.comments.forEach(comment => {
+  // コメントを日付の新しい順（降順）にソート
+  const sortedComments = [...app.comments].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB - dateA; // 降順（新しい順）にソート
+  });
+  
+  sortedComments.forEach(comment => {
     const date = new Date(comment.date);
     const formattedDate = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     
