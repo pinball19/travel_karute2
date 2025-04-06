@@ -99,6 +99,7 @@ function setupPaymentListeners(app) {
   document.getElementById('save-payment').addEventListener('click', () => {
     const paymentId = document.getElementById('payment-id').value;
     const paymentData = {
+      id: paymentId || Date.now().toString(), // 既存のIDを維持または新規IDを生成
       dueDate: document.getElementById('payment-due-date').value,
       date: document.getElementById('payment-date').value,
       amount: parseFloat(document.getElementById('payment-amount').value) || 0,
@@ -110,14 +111,11 @@ function setupPaymentListeners(app) {
       // 編集モード: 既存のデータを更新
       const index = app.payments.findIndex(p => p.id === paymentId);
       if (index !== -1) {
-        // IDや作成日時など、保持すべき値を維持
-        paymentData.id = paymentId;
         app.payments[index] = paymentData;
         showNotification('入金情報を更新しました', 'success');
       }
     } else {
       // 新規追加モード
-      paymentData.id = Date.now().toString(); // ユニークID
       app.payments.push(paymentData);
       showNotification('入金情報を追加しました', 'success');
     }
@@ -154,6 +152,7 @@ function setupExpenseListeners(app) {
   document.getElementById('save-expense').addEventListener('click', () => {
     const expenseId = document.getElementById('expense-id').value;
     const expenseData = {
+      id: expenseId || Date.now().toString(), // 既存のIDを維持または新規IDを生成
       date: document.getElementById('expense-date').value,
       vendor: document.getElementById('expense-vendor').value,
       phone: document.getElementById('expense-phone').value,
@@ -168,14 +167,11 @@ function setupExpenseListeners(app) {
       // 編集モード: 既存のデータを更新
       const index = app.expenses.findIndex(e => e.id === expenseId);
       if (index !== -1) {
-        // IDや作成日時など、保持すべき値を維持
-        expenseData.id = expenseId;
         app.expenses[index] = expenseData;
         showNotification('支払情報を更新しました', 'success');
       }
     } else {
       // 新規追加モード
-      expenseData.id = Date.now().toString(); // ユニークID
       app.expenses.push(expenseData);
       showNotification('支払情報を追加しました', 'success');
     }
