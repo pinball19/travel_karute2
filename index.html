@@ -308,114 +308,118 @@
     </div>
   </div>
 
-  <!-- 入金情報追加モーダル -->
-  <div id="payment-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>入金情報の追加</h2>
-      <div class="form-section">
-        <div class="form-row">
-          <div class="form-label">入金予定日</div>
-          <div class="form-field">
-            <input type="date" id="payment-due-date">
-          </div>
+  <!-- 入金情報追加・編集モーダル -->
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="payment-modal-title">入金情報の追加</h2>
+    <div class="form-section">
+      <!-- 編集時に使用するID（非表示） -->
+      <input type="hidden" id="payment-id">
+      <div class="form-row">
+        <div class="form-label">入金予定日</div>
+        <div class="form-field">
+          <input type="date" id="payment-due-date">
         </div>
-        <div class="form-row">
-          <div class="form-label">入金日</div>
-          <div class="form-field">
-            <input type="date" id="payment-date">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">入金日</div>
+        <div class="form-field">
+          <input type="date" id="payment-date">
         </div>
-        <div class="form-row">
-          <div class="form-label">入金額</div>
-          <div class="form-field">
-            <input type="number" id="payment-amount" placeholder="入金額">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">入金額</div>
+        <div class="form-field">
+          <input type="number" id="payment-amount" placeholder="入金額">
         </div>
-        <div class="form-row">
-          <div class="form-label">入金場所</div>
-          <div class="form-field">
-            <input type="text" id="payment-place" placeholder="入金場所">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">入金場所</div>
+        <div class="form-field">
+          <input type="text" id="payment-place" placeholder="入金場所">
         </div>
-        <div class="form-row">
-          <div class="form-label">備考</div>
-          <div class="form-field">
-            <textarea id="payment-notes" placeholder="備考"></textarea>
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">備考</div>
+        <div class="form-field">
+          <textarea id="payment-notes" placeholder="備考"></textarea>
         </div>
-        <div class="form-row">
-          <button id="save-payment" style="margin-left: auto;">保存</button>
-        </div>
+      </div>
+      <div class="form-row">
+        <button id="save-payment" style="margin-left: auto;">保存</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- 支払情報追加モーダル -->
-  <div id="expense-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>支払情報の追加</h2>
-      <div class="form-section">
-        <div class="form-row">
-          <div class="form-label">利用日</div>
-          <div class="form-field">
-            <input type="date" id="expense-date">
-          </div>
+<!-- 支払情報追加・編集モーダル -->
+<div id="expense-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="expense-modal-title">支払情報の追加</h2>
+    <div class="form-section">
+      <!-- 編集時に使用するID（非表示） -->
+      <input type="hidden" id="expense-id">
+      <div class="form-row">
+        <div class="form-label">利用日</div>
+        <div class="form-field">
+          <input type="date" id="expense-date">
         </div>
-        <div class="form-row">
-          <div class="form-label">手配先名</div>
-          <div class="form-field">
-            <input type="text" id="expense-vendor" placeholder="手配先名">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">手配先名</div>
+        <div class="form-field">
+          <input type="text" id="expense-vendor" placeholder="手配先名">
         </div>
-        <div class="form-row">
-          <div class="form-label">電話/FAX</div>
-          <div class="form-field">
-            <input type="text" id="expense-phone" placeholder="電話/FAX番号">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">電話/FAX</div>
+        <div class="form-field">
+          <input type="text" id="expense-phone" placeholder="電話/FAX番号">
         </div>
-        <div class="form-row">
-          <div class="form-label">担当者</div>
-          <div class="form-field">
-            <input type="text" id="expense-person" placeholder="担当者名">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">担当者</div>
+        <div class="form-field">
+          <input type="text" id="expense-person" placeholder="担当者名">
         </div>
-        <div class="form-row">
-          <div class="form-label">支払予定日</div>
-          <div class="form-field">
-            <input type="date" id="expense-due-date">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">支払予定日</div>
+        <div class="form-field">
+          <input type="date" id="expense-due-date">
         </div>
-        <div class="form-row">
-          <div class="form-label">支払金額</div>
-          <div class="form-field">
-            <input type="number" id="expense-amount" placeholder="支払金額">
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">支払金額</div>
+        <div class="form-field">
+          <input type="number" id="expense-amount" placeholder="支払金額">
         </div>
-        <div class="form-row">
-          <div class="form-label">手配状況</div>
-          <div class="form-field">
-            <select id="expense-status">
-              <option value="未手配">未手配</option>
-              <option value="手配中">手配中</option>
-              <option value="手配完了">手配完了</option>
-              <option value="支払済み">支払済み</option>
-            </select>
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">手配状況</div>
+        <div class="form-field">
+          <select id="expense-status">
+            <option value="未手配">未手配</option>
+            <option value="手配中">手配中</option>
+            <option value="手配完了">手配完了</option>
+            <option value="支払済み">支払済み</option>
+          </select>
         </div>
-        <div class="form-row">
-          <div class="form-label">備考</div>
-          <div class="form-field">
-            <textarea id="expense-notes" placeholder="備考"></textarea>
-          </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">備考</div>
+        <div class="form-field">
+          <textarea id="expense-notes" placeholder="備考"></textarea>
         </div>
-        <div class="form-row">
-          <button id="save-expense" style="margin-left: auto;">保存</button>
-        </div>
+      </div>
+      <div class="form-row">
+        <button id="save-expense" style="margin-left: auto;">保存</button>
       </div>
     </div>
   </div>
+</div>
 
   <div id="notification" class="notification"></div>
 
