@@ -358,3 +358,35 @@ footer {
     margin-bottom: 5px;
   }
 }
+
+/* カード操作関連のスタイル */
+.card-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.edit-card-btn, .remove-card-btn {
+  padding: 2px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.edit-card-btn {
+  background-color: #4285f4;
+  color: white;
+}
+
+.edit-card-btn:hover {
+  background-color: #2a75f3;
+}
+
+.remove-card-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.remove-card-btn:hover {
+  background-color: #d32f2f;
+}
