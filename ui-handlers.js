@@ -85,6 +85,8 @@ function setupPaymentListeners(app) {
   // 入金情報の追加ボタン
   document.getElementById('add-payment').addEventListener('click', () => {
     // モーダルを初期化して表示
+    document.getElementById('payment-modal-title').textContent = '入金情報の追加';
+    document.getElementById('payment-id').value = '';
     document.getElementById('payment-due-date').value = '';
     document.getElementById('payment-date').value = '';
     document.getElementById('payment-amount').value = '';
@@ -95,15 +97,31 @@ function setupPaymentListeners(app) {
   
   // 入金情報の保存ボタン
   document.getElementById('save-payment').addEventListener('click', () => {
-    const payment = {
-      id: Date.now().toString(), // ユニークID
+    const paymentId = document.getElementById('payment-id').value;
+    const paymentData = {
       dueDate: document.getElementById('payment-due-date').value,
       date: document.getElementById('payment-date').value,
       amount: parseFloat(document.getElementById('payment-amount').value) || 0,
       place: document.getElementById('payment-place').value,
       notes: document.getElementById('payment-notes').value
     };
-    app.payments.push(payment);
+    
+    if (paymentId) {
+      // 編集モード: 既存のデータを更新
+      const index = app.payments.findIndex(p => p.id === paymentId);
+      if (index !== -1) {
+        // IDや作成日時など、保持すべき値を維持
+        paymentData.id = paymentId;
+        app.payments[index] = paymentData;
+        showNotification('入金情報を更新しました', 'success');
+      }
+    } else {
+      // 新規追加モード
+      paymentData.id = Date.now().toString(); // ユニークID
+      app.payments.push(paymentData);
+      showNotification('入金情報を追加しました', 'success');
+    }
+    
     renderPayments(app);
     updateSummary(app);
     document.getElementById('payment-modal').style.display = 'none';
@@ -119,6 +137,8 @@ function setupExpenseListeners(app) {
   // 支払情報の追加ボタン
   document.getElementById('add-expense').addEventListener('click', () => {
     // モーダルを初期化して表示
+    document.getElementById('expense-modal-title').textContent = '支払情報の追加';
+    document.getElementById('expense-id').value = '';
     document.getElementById('expense-date').value = '';
     document.getElementById('expense-vendor').value = '';
     document.getElementById('expense-phone').value = '';
@@ -132,8 +152,8 @@ function setupExpenseListeners(app) {
   
   // 支払情報の保存ボタン
   document.getElementById('save-expense').addEventListener('click', () => {
-    const expense = {
-      id: Date.now().toString(), // ユニークID
+    const expenseId = document.getElementById('expense-id').value;
+    const expenseData = {
       date: document.getElementById('expense-date').value,
       vendor: document.getElementById('expense-vendor').value,
       phone: document.getElementById('expense-phone').value,
@@ -143,7 +163,23 @@ function setupExpenseListeners(app) {
       status: document.getElementById('expense-status').value,
       notes: document.getElementById('expense-notes').value
     };
-    app.expenses.push(expense);
+    
+    if (expenseId) {
+      // 編集モード: 既存のデータを更新
+      const index = app.expenses.findIndex(e => e.id === expenseId);
+      if (index !== -1) {
+        // IDや作成日時など、保持すべき値を維持
+        expenseData.id = expenseId;
+        app.expenses[index] = expenseData;
+        showNotification('支払情報を更新しました', 'success');
+      }
+    } else {
+      // 新規追加モード
+      expenseData.id = Date.now().toString(); // ユニークID
+      app.expenses.push(expenseData);
+      showNotification('支払情報を追加しました', 'success');
+    }
+    
     renderExpenses(app);
     updateSummary(app);
     document.getElementById('expense-modal').style.display = 'none';
