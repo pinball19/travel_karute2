@@ -1,0 +1,360 @@
+/* 基本スタイル */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  border-radius: 5px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.app-title h1 {
+  margin: 0;
+  color: #217346;
+}
+
+.app-info {
+  font-size: 14px;
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #217346;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1a5e38;
+}
+
+.section-container {
+  margin-bottom: 25px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 8px 15px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+}
+
+/* 新しいフォームスタイル */
+.form-section {
+  padding: 15px;
+}
+
+.form-row {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-label {
+  width: 200px;
+  font-weight: bold;
+  padding-right: 15px;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 250px;
+}
+
+.form-field input, 
+.form-field select, 
+.form-field textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* セクションの色分け */
+.basic-section .section-header { background-color: #4472c4; }
+.payment-section .section-header { background-color: #70ad47; }
+.expense-section .section-header { background-color: #ed7d31; }
+.summary-section .section-header { background-color: #7030a0; }
+.memo-section .section-header { background-color: #5b9bd5; }
+.comments-section .section-header { background-color: #4bacc6; }
+
+/* 追加ボタン */
+.add-item-btn {
+  margin: 5px 0 15px 0;
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+}
+
+.add-item-btn:hover { background-color: #45a049; }
+
+/* 情報カード（入金/支払情報用） */
+.info-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  position: relative;
+}
+
+.info-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.info-card-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.info-card-item {
+  flex: 1;
+  min-width: 120px;
+}
+
+.info-card-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.info-card-value {
+  font-size: 14px;
+}
+
+.info-card-notes {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddd;
+  font-size: 14px;
+  color: #555;
+}
+
+.remove-card-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-card-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* コメント欄 */
+.comment-input {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.comment-input textarea {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 60px;
+  margin-right: 10px;
+}
+
+.comment-input button {
+  align-self: flex-end;
+}
+
+.comment-thread {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.comment-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.comment-meta {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.comment-text {
+  margin-left: 10px;
+}
+
+/* モーダル */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  margin: 50px auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 800px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  display: none;
+}
+
+/* カルテ一覧 */
+#karte-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#karte-list th,
+#karte-list td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#karte-list th { background-color: #f2f2f2; }
+#karte-list tr:nth-child(even) { background-color: #f9f9f9; }
+#karte-list tr:hover { background-color: #f1f1f1; }
+
+.search-container { margin-bottom: 10px; }
+
+#search {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.edit-btn, .delete-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.delete-btn { background-color: #f44336; }
+.delete-btn:hover { background-color: #d32f2f; }
+
+footer {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+}
+
+/* スマホ向けレスポンシブ調整 */
+@media (max-width: 768px) {
+  body { padding: 10px; }
+  .app-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+  header, .action-buttons, footer {
+    flex-direction: column;
+    text-align: center;
+  }
+  .action-buttons button {
+    margin-bottom: 10px;
+  }
+  .form-label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .form-field {
+    width: 100%;
+  }
+  #karte-list th, #karte-list td {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-title h1 { font-size: 20px; }
+  .app-info { font-size: 12px; }
+  button { font-size: 14px; padding: 6px 12px; }
+  .info-card-body {
+    flex-direction: column;
+  }
+  .info-card-item {
+    margin-bottom: 5px;
+  }
+}
